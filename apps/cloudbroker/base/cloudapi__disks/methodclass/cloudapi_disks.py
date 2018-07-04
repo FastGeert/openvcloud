@@ -55,10 +55,11 @@ class cloudapi_disks(BaseActor):
         :return the id of the created disk
 
         """
-        # Validate that enough resources are available in the account CU limits to add the disk
-        j.apps.cloudapi.accounts.checkAvailableMachineResources(accountId, vdisksize=size)
-        disk, _ = self._create(accountId, gid, name, description, size, type, iops)
-        return disk.id
+        with self.models.account.lock(accountId):
+            # Validate that enough resources are available in the account CU limits to add the disk
+            j.apps.cloudapi.accounts.checkAvailableMachineResources(accountId, vdisksize=size)
+            disk, _ = self._create(accountId, gid, name, description, size, type, iops)
+            return disk.id
 
     def _create(self, accountId, gid, name, description, size=10, type='D', iops=2000, physicalSource=None, nid=None, order=None, **kwargs):
         if size > 2000 and type != 'P':
@@ -214,15 +215,25 @@ class cloudapi_disks(BaseActor):
         machine = next(iter(self.models.vmachine.search({'disks': diskId})[1:]), None)
         if machine:
             # Validate that enough resources are available in the CU limits to add the disk
-            j.apps.cloudapi.cloudspaces.checkAvailableMachineResources(machine['cloudspaceId'], vdisksize=size)
-            provider, _, _ = self.cb.getProviderAndNode(machine['id'])
-            machine_id = machine['referenceId']
+            with self.models.cloudspace.lock(machine['cloudspaceId']):
+                j.apps.cloudapi.cloudspaces.checkAvailableMachineResources(machine['cloudspaceId'], vdisksize=size)
+                provider, _, _ = self.cb.getProviderAndNode(machine['id'])
+                machine_id = machine['referenceId']
+
+                return self._extend_disk(disk, provider, machine_id, size)
+
         else:
             # Validate that enough resources are available in the CU limits to add the disk
-            j.apps.cloudapi.accounts.checkAvailableMachineResources(disk.accountId, vdisksize=size)
-            provider = self.cb.getProviderByGID(disk.gid)
-            machine_id = None
+            with self.models.account.lock(disk.accountId):
+                j.apps.cloudapi.accounts.checkAvailableMachineResources(disk.accountId, vdisksize=size)
+                provider = self.cb.getProviderByGID(disk.gid)
 
+                return self._extend_disk(disk, provider, None, size)
+
+    def _extend_disk(self, disk, provider, machine_id, size):
+        """
+        Extends disk
+        """
         volume = self.getStorageVolume(disk, provider)
         disk.sizeMax = size
         disk_info = {'referenceId': disk.referenceId, 'machineRefId': machine_id}
