@@ -14,7 +14,3 @@ sudo apt-get install -y xvfb chromium-chromedriver -y
 sudo ln -fs /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
 sudo ln -fs /usr/lib/chromium-browser/chromedriver /usr/local/bin/chromedriver
 
-
-#export PYTHONPATH=/opt/jumpscale7/lib:/opt/jumpscale7/lib/lib-dynload/:/opt/jumpscale7/bin:/opt/jumpscale7/lib/python.zip:/opt/jumpscale7/lib/plat-x86_64-linux-gnu
-
-
