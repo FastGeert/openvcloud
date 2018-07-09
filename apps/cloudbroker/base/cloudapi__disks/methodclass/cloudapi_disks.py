@@ -213,32 +213,23 @@ class cloudapi_disks(BaseActor):
             raise exceptions.BadRequest("Disk with id %s is not created" % diskId)
 
         machine = next(iter(self.models.vmachine.search({'disks': diskId})[1:]), None)
-        if machine:
-            # Validate that enough resources are available in the CU limits to add the disk
-            with self.models.cloudspace.lock(machine['cloudspaceId']):
+        with self.models.account.lock(disk.accountId):
+            if machine:
+                # Validate that enough resources are available in the CU limits to add the disk
                 j.apps.cloudapi.cloudspaces.checkAvailableMachineResources(machine['cloudspaceId'], vdisksize=size)
                 provider, _, _ = self.cb.getProviderAndNode(machine['id'])
                 machine_id = machine['referenceId']
-
-                return self._extend_disk(disk, provider, machine_id, size)
-
-        else:
-            # Validate that enough resources are available in the CU limits to add the disk
-            with self.models.account.lock(disk.accountId):
+            else:
+                # Validate that enough resources are available in the CU limits to add the disk
                 j.apps.cloudapi.accounts.checkAvailableMachineResources(disk.accountId, vdisksize=size)
                 provider = self.cb.getProviderByGID(disk.gid)
+                machine_id = None
 
-                return self._extend_disk(disk, provider, None, size)
-
-    def _extend_disk(self, disk, provider, machine_id, size):
-        """
-        Extends disk
-        """
-        volume = self.getStorageVolume(disk, provider)
-        disk.sizeMax = size
-        disk_info = {'referenceId': disk.referenceId, 'machineRefId': machine_id}
-        res = provider.ex_extend_disk(volume.vdiskguid, size, disk_info)
-        self.models.disk.set(disk)
-        if not res:
-            raise exceptions.Accepted(False)
-        return True
+            volume = self.getStorageVolume(disk, provider)
+            disk.sizeMax = size
+            disk_info = {'referenceId': disk.referenceId, 'machineRefId': machine_id}
+            res = provider.ex_extend_disk(volume.vdiskguid, size, disk_info)
+            self.models.disk.set(disk)
+            if not res:
+                raise exceptions.Accepted(False)
+            return True

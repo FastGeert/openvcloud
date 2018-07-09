@@ -187,7 +187,7 @@ class cloudapi_machines(BaseActor):
             raise exceptions.BadRequest("Cannot create boot disks")
         cloudspace = self.models.cloudspace.get(machine.cloudspaceId)
 
-        with self.models.cloudspace.lock(machine.cloudspaceId):
+        with self.models.account.lock(cloudspace.accountId):
             # Validate that enough resources are available in the CU limits to add the disk
             j.apps.cloudapi.cloudspaces.checkAvailableMachineResources(cloudspace.id, vdisksize=size)
             disk, _ = j.apps.cloudapi.disks._create(accountId=cloudspace.accountId, gid=cloudspace.gid,
@@ -657,7 +657,8 @@ class cloudapi_machines(BaseActor):
         :return bool
 
         """
-        with self.models.cloudspace.lock(cloudspaceId):
+        cloudspace = self.models.cloudspace.get(cloudspaceId)
+        with self.models.account.lock(cloudspace.accountId):
             machine, auth, volumes, cloudspace = self._prepare_machine(cloudspaceId, name, description, imageId, disksize,
                                                                         datadisks, sizeId, vcpus, memory)
             machineId = self.cb.machine.create(machine, auth, cloudspace, volumes, imageId, None, userdata)
@@ -1312,7 +1313,8 @@ class cloudapi_machines(BaseActor):
         if new_vcpus < old_vcpus and vmachine.status != resourcestatus.Machine.HALTED:
             raise exceptions.BadRequest('Can not decrease vcpus on a running machine')
 
-        with self.models.cloudspace.lock(vmachine.cloudspaceId):
+        cloudspace = self.models.cloudspace.get(vmachine.cloudspaceId)
+        with self.models.account.lock(cloudspace.accountId):
             deltamemory = max(deltamemorymb/1024., 0)
             j.apps.cloudapi.cloudspaces.checkAvailableMachineResources(vmachine.cloudspaceId,
                                                                     numcpus=deltacpu,
