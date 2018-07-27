@@ -119,8 +119,8 @@ class cloudapi_disks(BaseActor):
                 if val and val < MIN_IOPS:
                     raise exceptions.BadRequest("{arg} was set below the minimum iops {min_iops}: {provided_iops} provided".format(
                         arg=arg, min_iops=MIN_IOPS, provided_iops=val))
-
-        iotune = args
+        
+        iotune = args.copy()
         iotune.pop('diskId')
         iotune.pop('kwargs')
         iotune.pop('self')
