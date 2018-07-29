@@ -10,7 +10,7 @@
         Returns 200 if cloudspace is deleted or was already deleted or never existed
         """
         var:cloudspaceId str,,ID of cloudspace
-        var:permanently bool,False, whether to completly delete the cloudspace
+        var:permanently bool,False, whether to completly delete the cloudspace @optional
         var:reason str,, reason for destroying the cloudspace
 
     method:moveVirtualFirewallToFirewallNode
@@ -144,4 +144,4 @@
         """
         var:cloudspaceIds list(int),, IDs of cloudspaces
         var:reason str,, reason for deletion
-        var:permanently bool ,, whether to completly destroy cloudspaces or not
+        var:permanently bool ,, whether to completly destroy cloudspaces or not @optional
