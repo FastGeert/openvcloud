@@ -9,6 +9,7 @@ import re
 import requests
 import gevent
 import urlparse
+import math
 from datetime import datetime
 
 
@@ -446,7 +447,7 @@ class cloudapi_machines(BaseActor):
                 disk.order = i
                 disk.accountId = cloudspace.accountId
                 disk.type = 'B' if i == 0 else 'D'
-                disk.sizeMax = diskobj['size'] / 1024 / 1024 / 1024
+                disk.sizeMax = int(math.ceil(diskobj['size'] / 1024. ** 3))
                 totaldisksize += disk.sizeMax
                 disk.name = diskobj['name']
                 diskid = self.models.disk.set(disk)[0]
