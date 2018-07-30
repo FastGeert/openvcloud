@@ -702,6 +702,9 @@ class cloudapi_machines(BaseActor):
             vcpus = size.vcpus
         totaldisksize = sum(datadisks + [disksize])
 
+        if memory % 2:
+            raise exceptions.BadRequest("memory value should be an even number")
+
         j.apps.cloudapi.cloudspaces.checkAvailableMachineResources(cloudspace.id, vcpus,
                                                                    memory / 1024.0, totaldisksize)
         machine, auth, volumes = self.cb.machine.createModel(
@@ -1360,6 +1363,10 @@ class cloudapi_machines(BaseActor):
             vcpus = size.vcpus
         new_memory = memory
         new_vcpus = vcpus
+
+        if new_memory % 2:
+            raise exceptions.BadRequest("memory value should be an even number")
+
         provider, node, vmachine = self.cb.getProviderAndNode(machineId)
         # Validate that enough resources are available in the CU limits if size will be increased
         old_memory = vmachine.memory
