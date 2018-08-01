@@ -17,11 +17,12 @@ done
 
 
 LOGFILE="/tmp/${TESTSUITE}.log"
+protocol=${protocol:-https}
 
 if [[ ${TESTSUITE} == "acl" ]] || [[ ${TESTSUITE} == "ovc" ]]; then
 
     export PYTHONPATH=/opt/jumpscale7/lib:/opt/jumpscale7/lib/lib-dynload/:/opt/jumpscale7/bin:/opt/jumpscale7/lib/python.zip:/opt/jumpscale7/lib/plat-x86_64-linux-gnu
-    nosetests-2.7 -s -v --logging-level=WARNING ${TESTS_PATH} --tc-file config.ini --tc=main.environment:${environment} --tc=main.protocol:https 2>&1 | tee ${LOGFILE}
+    nosetests-2.7 -s -v --logging-level=WARNING ${TESTS_PATH} --tc-file config.ini --tc=main.environment:${environment} --tc=main.protocol:${protocol} 2>&1 | tee ${LOGFILE}
 
 elif [[ ${TESTSUITE} == "portal" ]]; then
 

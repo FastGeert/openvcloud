@@ -170,6 +170,13 @@ class MachineTests(BasicACLTest):
         self.lg("Create VM1,should succeed.")
         vm1_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
 
+        self.lg('Make sure that the bridge is created')
+        hexNetworkID = '%04x' % self.get_cloudspace_network_id(self.cloudspace_id)
+        vmnodeid = self.get_machine_nodeID(vm1_id)
+        command = 'ls /sys/class/net'  # All created bridges in this node
+        result = self.execute_command_on_physical_node(command, vmnodeid)
+        self.assertIn('space_' + hexNetworkID, result)
+
         self.lg('Write a big file FS1 on VM1')
         current_stackId = self.api.cloudbroker.machine.get(machineId=vm1_id)["stackId"]
         second_node = self.get_running_stackId(current_stackId)
@@ -197,6 +204,11 @@ class MachineTests(BasicACLTest):
         self.lg('Check if the file has been written correctly after vm live migration')
         stdin, stdout, stderr = vm1_client.execute('md5sum largefile.txt | cut -d " " -f 1')
         self.assertEqual(stdout.read().strip(), 'cd96e05cf2a42e587c78544d19145a7e')
+
+        self.lg('Check the bridge was removed')
+        command = 'ls /sys/class/net'  # All created bridges in this node
+        result = self.execute_command_on_physical_node(command, vmnodeid)
+        self.assertNotIn('space_' + hexNetworkID, result)
 
         self.lg('%s ENDED' % self._testID)
 
