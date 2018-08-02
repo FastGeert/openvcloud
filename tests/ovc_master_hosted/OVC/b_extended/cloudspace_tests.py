@@ -315,7 +315,6 @@ class CloudspaceTests(BasicACLTest):
         self.api.cloudbroker.cloudspace.moveVirtualFirewallToFirewallNode(self.cloudspace_id, node_id)
         vfw = self.api.cloudbroker.cloudspace.getVFW(self.cloudspace_id)
         self.assertEqual(vfw['nid'], node_id)
-        self.wait_for_status('HALTED', self.api.cloudbroker.cloudspace.getVFW, cloudspaceId=self.cloudspace_id)
 
         self.lg('Start cloudspace (CS1)\'s vfw, should succeed')
         self.api.cloudbroker.cloudspace.startVFW(self.cloudspace_id)

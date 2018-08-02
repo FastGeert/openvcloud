@@ -38,7 +38,7 @@ class NetworkBasicTests(BasicACLTest):
             cloud_space_networkId.append(ccl.cloudspace.get(self.cloudspaceId).networkId)
 
         self.lg('2- Delete the third cloudspace')
-        self.account_owner_api.cloudapi.cloudspaces.delete(cloudspaceId=self.cloudspaceId)
+        self.account_owner_api.cloudapi.cloudspaces.delete(cloudspaceId=self.cloudspaceId, permanently=True)
 
         self.lg('3- Check the release network ID after destroying the third cloudspace')
         for timeDelay in range(0, 10):
@@ -49,7 +49,7 @@ class NetworkBasicTests(BasicACLTest):
         self.assertFalse(ccl.cloudspace.get(self.cloudspaceId).networkId)
 
         self.lg('4- delete account: %s' % self.account_id)
-        self.api.cloudbroker.account.delete(accountId=self.account_id, reason='testing')
+        self.api.cloudbroker.account.delete(accountId=self.account_id, permanently=True, reason='testing')
 
         self.lg('5- Check the release network ID are in the free network IDs list')
         lcl = j.clients.osis.getNamespace('libvirt')
@@ -98,7 +98,7 @@ class NetworkBasicTests(BasicACLTest):
         self.assertTrue(self.has_cloudspacebridges())
 
         self.lg('Delete this cloudspace')
-        self.account_owner_api.cloudapi.cloudspaces.delete(cloudspaceId=self.cloudspace_id)
+        self.account_owner_api.cloudapi.cloudspaces.delete(cloudspaceId=self.cloudspace_id, permanently=True)
 
         self.lg('Make sure that the bridge is deleted')
         self.assertFalse(self.has_cloudspacebridges())

@@ -255,12 +255,12 @@ class ExtendedTests(BasicACLTest):
                                                        maxNumPublicIP=1)
 
         self.lg('- create 1st VM (M=16, C=8, BD=100, DD=[10,10,10]) on the created cloudspace, should succeed')
-        self.cloudapi_create_machine(cloudspaceId, self.account_owner_api, size_id=5,
+        self.cloudapi_create_machine(cloudspaceId, self.account_owner_api, memory=16*1024, vcpus=8,
                                      disksize=100, datadisks=[10,10,10])
 
         self.lg('- create another VM (M=8, C=4) on the created cloudspace, should fail as T_M=24 & T_C=12')
         try:
-            self.cloudapi_create_machine(cloudspaceId, self.account_owner_api, size_id=4)
+            self.cloudapi_create_machine(cloudspaceId, self.account_owner_api, memory=8*1024, vcpus=4)
         except ApiError as e:
             self.lg('- expected error raised %s' % e.message)
             self.assertEqual(e.message, '400 Bad Request')
@@ -268,14 +268,14 @@ class ExtendedTests(BasicACLTest):
         self.lg('- create VM (M=2, C=2, BD=100, DD=[10,10,10]) on the created cloudspace,'
                 ' should fail as T_VD=260')
         try:
-            self.cloudapi_create_machine(cloudspaceId, self.account_owner_api, size_id=2,
+            self.cloudapi_create_machine(cloudspaceId, self.account_owner_api, memory=2*1024, vcpus=2,
                                          disksize=100, datadisks=[10,10,10])
         except ApiError as e:
             self.lg('- expected error raised %s' % e.message)
             self.assertEqual(e.message, '400 Bad Request')
 
         self.lg('- create 2nd VM (M=2, C=2, BD=100, DD=[10,10]) on the created cloudspace, should succeed')
-        machineId = self.cloudapi_create_machine(cloudspaceId, self.account_owner_api, size_id=2,
+        machineId = self.cloudapi_create_machine(cloudspaceId, self.account_owner_api, memory=2*1024, vcpus=2,
                                                  disksize=100, datadisks=[10,10])
 
         self.lg('- Add publicip to the 2nd VM, should fail as T_IPs=1')

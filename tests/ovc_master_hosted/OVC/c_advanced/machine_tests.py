@@ -373,7 +373,7 @@ class MachineTests(BasicACLTest):
         self.assertIn('bin', stdout.read())
 
         self.lg("Restart VM1 and make sure it is still running.")
-        self.api.cloudapi.machines.reset(machineId=vm1_id)
+        self.api.cloudapi.machines.reboot(machineId=vm1_id)
         time.sleep(2)
         self.assertEqual(self.api.cloudapi.machines.get(machineId=vm1_id)['status'], 'RUNNING')
         vm1_client = VMClient(vm1_id)
