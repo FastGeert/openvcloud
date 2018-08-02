@@ -909,7 +909,7 @@ class cloudapi_machines(BaseActor):
             machine['updateTime'] = int(time.time())
             machine['deletionTime'] = 0
             self.models.vmachine.set(machine)
-        gevent.spawn(self.cb.cloudspace.update_firewall, cloudspace)
+        gevent.spawn(self.cb.cloudspace.update_firewall, cloudspace, ctx=j.core.portal.active.requestContext)
         self.models.disk.updateSearch({'id' : {'$in': machine['disks']}}, {'$set': {'status': resourcestatus.Disk.CREATED}})
         return True
 
@@ -1148,7 +1148,7 @@ class cloudapi_machines(BaseActor):
             self.cb.machine.cleanup(clone)
             raise
         self.models.disk.updateSearch({'id' : {'$in': clone.disks}}, {'$set': {'status': resourcestatus.Disk.ASSIGNED}})
-        gevent.spawn(self.cb.cloudspace.update_firewall, cloudspace)
+        gevent.spawn(self.cb.cloudspace.update_firewall, cloudspace, ctx=j.core.portal.active.requestContext)
         return clone.id
 
     @authenticator.auth(acl={'machine': set('R')})
