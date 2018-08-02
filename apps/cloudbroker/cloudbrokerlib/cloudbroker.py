@@ -482,14 +482,14 @@ class Machine(object):
                 raise exceptions.BadRequest('Userdata should be a dictonary')
 
         maxvms = netaddr.IPNetwork(cloudspace.privatenetwork).size - 5
-        if models.vmachine.count({'status': {'$nin': resourcestatus.Machine.DELETED_STATES}, 'cloudspaceId': cloudspace.id}) >= maxvms:
+        if models.vmachine.count({'status': {'$nin': resourcestatus.Machine.INVALID_STATES}, 'cloudspaceId': cloudspace.id}) >= maxvms:
             raise exceptions.BadRequest("Can not create more than {} Virtual Machines in this Cloud Space".format(maxvms))
 
     def assertName(self, cloudspaceId, name):
         if not name or not name.strip():
             raise ValueError("Machine name can not be empty")
         results = models.vmachine.search({'cloudspaceId': cloudspaceId, 'name': name,
-                                          'status': {'$nin': resourcestatus.Machine.DELETED_STATES}})[1:]
+                                          'status': {'$ne': resourcestatus.Machine.DESTROYED}})[1:]
         if results:
             raise exceptions.Conflict('Selected name already exists')
 

@@ -144,7 +144,7 @@ class cloudbroker_grid(BaseActor):
         except:
             raise exceptions.NotFound("No grid with id {} was found".format(id))
         all_vms = self.models.vmachine.search({
-            'status': {'$nin': resourcestatus.Machine.DELETED_STATES}})[1:]
+            'status': {'$nin': resourcestatus.Machine.INVALID_STATES}})[1:]
         vms = filter(lambda vm: self.models.disk.count({'id': {'$in': vm['disks']}, 'type': 'P'}) > 0, all_vms)
         if vms:
             raise exceptions.BadRequest("System space already exists on this location")

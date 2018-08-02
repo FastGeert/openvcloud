@@ -143,7 +143,7 @@ class cloudapi_cloudspaces(BaseActor):
         account = self.models.account.get(accountId)
         if account.status == 'DISABLED':
             return []
-        query = {'accountId': accountId, 'status': {'$ne': 'DESTROYED'}}
+        query = {'accountId': accountId, 'status': {'$ne': resourcestatus.Cloudspace.DESTROYED}}
         results = self.models.cloudspace.search(query)[1:]
         return results
 
