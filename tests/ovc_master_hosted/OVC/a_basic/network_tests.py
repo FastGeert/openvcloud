@@ -62,6 +62,14 @@ class NetworkBasicTests(BasicACLTest):
                     break
             self.assertTrue(cloud_space_networkId[csNumbers] in released_network_Id)
         self.lg('%s ENDED' % self._testID)
+
+    def has_cloudspacebridges(self, cloudspaceId=None, nid=None):
+        cloudspaceId = cloudspaceId or self.cloudspace_id
+        nid = nid or self.get_physical_node_id(cloudspaceId)
+        hexNetworkID = '%04x' % self.get_cloudspace_network_id(cloudspaceId)
+        command = 'ls /sys/class/net'  # All created bridges in this node
+        result = self.execute_command_on_physical_node(command, nid)
+        return 'space_' + hexNetworkID in result
     
     def test002_clean_ovs_bridge(self):
         ''' OVC-011
@@ -76,29 +84,24 @@ class NetworkBasicTests(BasicACLTest):
         #. make sure that the bridge is released
         '''
         self.lg('%s STARTED' % self._testID)
-        self.lg('1- Create a new cloudspace and deployed it')
-        cloudspace_id = self.cloudapi_cloudspace_create(self.account_id,
-                                                self.location,
-                                                self.account_owner)
-        self.api.cloudbroker.cloudspace.deployVFW(cloudspace_id)
+        self.api.cloudbroker.cloudspace.deployVFW(self.cloudspace_id)
+        self.lg('Make sure that the bridge is created')
+        self.assertTrue(self.has_cloudspacebridges())
 
-        self.lg('2- Get the cloudspace network ID and convert it to hex')
-        self.hexNetworkID = '%04x' % self.get_cloudspace_network_id(cloudspace_id)
+        self.lg('Stop ros check if bridge is gone')
+        self.api.cloudbroker.cloudspace.stopVFW(self.cloudspace_id)
+        self.assertFalse(self.has_cloudspacebridges())
 
-        self.lg('- Get the cloudspace physical node ID')
-        nodID = self.get_physical_node_id(cloudspace_id)
+        self.lg('Start VFW again')
+        self.api.cloudbroker.cloudspace.startVFW(self.cloudspace_id)
+        self.lg('Make sure that the bridge is created')
+        self.assertTrue(self.has_cloudspacebridges())
 
-        self.lg('3- Make sure that the bridge is created')
-        command = 'ls /sys/class/net'  # All created bridges in this node
-        result = self.execute_command_on_physical_node(command, nodID)
-        self.assertIn('space_' + self.hexNetworkID, result)
+        self.lg('Delete this cloudspace')
+        self.account_owner_api.cloudapi.cloudspaces.delete(cloudspaceId=self.cloudspace_id)
 
-        self.lg('4- Delete this cloudspace')
-        self.account_owner_api.cloudapi.cloudspaces.delete(cloudspaceId=cloudspace_id)
-
-        self.lg('5- Make sure that the bridge is deleted')
-        result = self.execute_command_on_physical_node(command, nodID)
-        self.assertNotIn('space_' + self.hexNetworkID, result)
+        self.lg('Make sure that the bridge is deleted')
+        self.assertFalse(self.has_cloudspacebridges())
 
         self.lg('%s ENDED' % self._testID)
     
@@ -212,6 +215,7 @@ class NetworkBasicTests(BasicACLTest):
 
         self.lg('2- get nodeId of the cloudspace virtual firewall')
         nodeId = self.get_physical_node_id(self.cloudspace_id)
+        self.assertTrue(self.has_cloudspacebridges())
 
         self.lg('3- get another nodeId to move the virtual firewall to')
         other_nodeId = self.get_nodeId_to_move_VFW_to(nodeId)
@@ -224,6 +228,7 @@ class NetworkBasicTests(BasicACLTest):
                                                                           targetNid=other_nodeId)
         new_nodeId = self.get_physical_node_id(self.cloudspace_id)
         self.assertEqual(other_nodeId, new_nodeId)
+        self.assertFalse(self.has_cloudspacebridges(nid=nodeId))
 
         self.wait_for_status('DEPLOYED', self.account_owner_api.cloudapi.cloudspaces.get,
                              cloudspaceId=self.cloudspace_id)
