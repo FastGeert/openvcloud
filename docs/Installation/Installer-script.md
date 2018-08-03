@@ -87,7 +87,9 @@ Usage is as follows
 <a id="cluster-updatedomain"></a>
 ### cluster updatedomain
 
-The command `cluster updatedomain` is used to update the SSL certificates and the domain of the environment. This is done by updating the `environment` section in the passed configuration file. To update the certificates the `ssl` section needs to be updated with the new locations that contains the certificates, the `subdomain` and `basedomain` for the updated domain.
+The command `cluster updatedomain` is used to update the SSL certificates and the domain of the environment. This is done by updating the `environment` and/or `certificates` sections in the passed configuration file.
+`ssl` section needs to be updated with a new certificate names for the certificate update, the `subdomane` and `basedomain` for the update domain.
+If adding a new certificate, `certificates` section needs to be updated with a new certificate, referenced from `ssl` section.
 
 <a id="cluster-upgrade"></a>
 ### cluster upgrade
