@@ -15,9 +15,9 @@ import paramiko
 
 SESSION_DATA = {'vms': []}
 
-IMAGE_URL = 'ftp://pub:pub1234@ftp.aydo.com/Linux/openwrt/openwrt-18.06-rc1.qcow2'
+IMAGE_URL = 'ftp://pub:pub1234@ftp.gig.tech/Linux/openwrt/openwrt-18.06-rc1.qcow2'
 
-CDROM_URL = 'https://distro.ibiblio.org/tinycorelinux/9.x/x86/release/Core-current.iso'
+CDROM_URL = 'ftp://pub:pub1234@ftp.gig.tech/Linux/tinycorelinux/Core-9x.iso'
 
 
 class API(object):

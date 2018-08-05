@@ -139,6 +139,11 @@ class cloudapi_machines(BaseActor):
 
         :param machineId: id of the machine
         """
+        machine = self._getMachine(machineId)
+        tags = j.core.tags.getObject(machine.tags)
+        if 'cdrom' in tags.tags:
+            tags.tagDelete('cdrom')
+            self.models.vmachine.updateSearch({'id': machine.id}, {'$set': {'tags': tags.tagstring}})
         return self._action(machineId, 'stop', resourcestatus.Machine.HALTED, force=force)
 
     @authenticator.auth(acl={'machine': set('X')})
