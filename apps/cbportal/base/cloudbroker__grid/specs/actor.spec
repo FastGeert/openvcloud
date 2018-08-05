@@ -5,7 +5,7 @@
 
     method:purgeLogs
         """
-        Remove logs & eco’s
+        Remove logs & eco's
         By default the logs en eco's older than than 1 week but this can be overriden
         """
         var:gid int,, id of the grid
