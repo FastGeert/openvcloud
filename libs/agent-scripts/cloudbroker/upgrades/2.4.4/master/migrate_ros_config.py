@@ -14,9 +14,15 @@ roles = ['controller']
 async = True
 
 def action():
+    acl = j.clients.agentcontroller.get()
     vcl = j.clients.osis.getNamespace('vfw')
     vfws = vcl.virtualfirewall.search({}, size=0)[1:]
+    
+    args = dict()
+    args['script'] = '/system hardware set multi-cpu=no'
     for vfw in vfws:
-        router = j.clients.routeros.get(vfw['host'], vfw['username'], vfw['password'])
-        router.do("/system/hardware/set", {"multi-cpu": "no"})
-        router.close()
+        args['fwobject'] = vfw
+        acl.executeJumpscript('jumpscale', 'vfs_runscript_routeros', args=args, nid=vfw['nid'], gid=vfw['gid'], timeout=5)
+
+if __name__ == '__main__':
+    action()
