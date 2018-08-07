@@ -22,7 +22,10 @@ def action():
     args['script'] = '/system hardware set multi-cpu=no'
     for vfw in vfws:
         args['fwobject'] = vfw
-        acl.executeJumpscript('jumpscale', 'vfs_runscript_routeros', args=args, nid=vfw['nid'], gid=vfw['gid'], timeout=5)
+        try:
+            acl.executeJumpscript('jumpscale', 'vfs_runscript_routeros', args=args, nid=vfw['nid'], gid=vfw['gid'], timeout=5)
+        except:
+            j.errorconditionhandler.raiseOperationalWarning("Can't connect to routeros {}".format(vfw['guid']))
 
 if __name__ == '__main__':
     action()
