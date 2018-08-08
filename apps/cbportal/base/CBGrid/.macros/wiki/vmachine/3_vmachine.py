@@ -17,7 +17,10 @@ def generateUsersList(sclient, objdict, accessUserType, users):
     """
     for acl in objdict['acl']:
         if acl['userGroupId'] in [user['id'] for user in users]:
-            continue
+            if accessUserType == 'vm':
+                users = filter(lambda user: user['id'] != acl['userGroupId'], users)
+            else:
+                continue    
         if acl['type'] == 'U':
             eusers = sclient.user.simpleSearch({'id': acl['userGroupId']})
             if eusers:
