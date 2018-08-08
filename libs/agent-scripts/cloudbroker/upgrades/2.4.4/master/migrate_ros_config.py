@@ -10,7 +10,7 @@ organization = "greenitglobe"
 author = "ali.chaddad@gig.tech"
 license = "bsd"
 version = "2.0"
-roles = ['controller']
+roles = ['master']
 async = True
 
 def action():

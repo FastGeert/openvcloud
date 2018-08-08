@@ -226,7 +226,7 @@ class auth(object):
             if userobj:
                 groups = set(userobj.groups)
             if not groups.intersection(self.groups):
-                raise exceptions.Forbidden('User %s has no access. If you would like to gain access please contact your adminstrator' % user)
+                raise exceptions.Forbidden('User %s has no access. If you would like to gain access please contact your adminstrator' % username)
 
         if 'account' in self.acl and account:
             grantedaccountacl = self.expandAclFromAccount(username, groups, account)
