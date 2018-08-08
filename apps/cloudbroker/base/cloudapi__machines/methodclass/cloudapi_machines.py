@@ -390,6 +390,8 @@ class cloudapi_machines(BaseActor):
         message = j.core.portal.active.templates.render('cloudbroker/email/users/export_completion.html', **args)
         subject = j.core.portal.active.templates.render('cloudbroker/email/users/export_completion.subject.txt', **args)
 
+        j.clients.email.send(toaddrs, fromaddr, subject, message, files=None)
+
     def _sendCreateTemplateCompletionMail(self, name, emailaddress, success=True, error=False, eco=""):
         fromaddr = self.hrd.get('instance.openvcloud.supportemail')
         if isinstance(emailaddress, list):
@@ -539,12 +541,12 @@ class cloudapi_machines(BaseActor):
                 provider.destroy_volumes_by_guid(diskguids)
             # TODO: the url to be sent to the user
             if export_job['state'] == 'ERROR':
-                raise exceptions.Error("Failed to export Virtaul Machine")
+                raise exceptions.Error("Failed to export Virtual Machine")
             if not callbackUrl:
                 [self._sendExportCompletionMail(vm.name, email, success=True) for email in userobj.emails]
             else:
                 requests.get(callbackUrl)
-        except Exception as e:
+        except BaseException as e:
             eco = j.errorconditionhandler.processPythonExceptionObject(e)
             eco.process()
             error = True
