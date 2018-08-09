@@ -64,6 +64,11 @@
         var:nodestype str,, Type of nodes you want to apply the action on
         var:script str,, the script you want to run
 
+    method:status @noauth
+        """
+        Check if current environment is active
+        """
+
     method:createSystemSpace
         """
         create system space

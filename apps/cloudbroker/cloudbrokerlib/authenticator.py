@@ -1,11 +1,11 @@
 from JumpScale import j
 from JumpScale.portal.portal import exceptions
-from .cloudbroker import models
+from .cloudbroker import models, sysmodels
 from cloudbrokerlib import resourcestatus
 
 
 class auth(object):
-    def __init__(self, acl=None, level=None, groups=None):
+    def __init__(self, acl=None, level=None, groups=None, skipversioncheck=False):
         self.acl = acl or dict()
         for key in self.acl:
             if key not in ['account', 'cloudspace', 'machine']:
@@ -14,6 +14,7 @@ class auth(object):
         self.level = level
         self.models = models
         self.groups = groups
+        self.skipversioncheck = skipversioncheck
 
     def getAccountAcl(self, accountId):
         result = dict()
@@ -105,6 +106,9 @@ class auth(object):
                 # call is not performed over rest let it pass
                 return func(*args, **kwargs)
             ctx = kwargs['ctx']
+            if not self.skipversioncheck and sysmodels.version.count({'status': 'INSTALLING'}) != 0:
+                raise exceptions.ServiceUnavailable('Can not call API during upgrade')
+            
             tags = j.core.tags.getObject(ctx.env['tags'])
             user = ctx.env['beaker.session']['user']
             account = None

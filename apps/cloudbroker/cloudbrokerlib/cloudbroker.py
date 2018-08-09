@@ -18,6 +18,7 @@ DEFAULTIOPS = 2000
 
 ujson = j.db.serializers.ujson
 models = j.clients.osis.getNamespace('cloudbroker')
+sysmodels = j.clients.osis.getNamespace('system')
 _providers = dict()
 
 
@@ -42,8 +43,8 @@ class CloudBroker(object):
     def __init__(self):
         self.Dummy = Dummy
         self._actors = None
-        self.syscl = j.clients.osis.getNamespace('system')
-        self.cbcl = j.clients.osis.getNamespace('cloudbroker')
+        self.syscl = sysmodels
+        self.cbcl = models
         self.vcl = j.clients.osis.getNamespace('vfw')
         self.agentcontroller = j.clients.agentcontroller.get()
         self.machine = Machine(self)
