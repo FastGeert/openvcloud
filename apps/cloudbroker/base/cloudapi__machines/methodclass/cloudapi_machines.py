@@ -1206,7 +1206,7 @@ class cloudapi_machines(BaseActor):
         vmachine = self.models.vmachine.get(machineId)
         cloudspaceacl = authenticator.auth().getCloudspaceAcl(vmachine.cloudspaceId)
         if userId not in cloudspaceacl:
-            self.cb.actors.cloudapi.cloudspaces.addUser(cloudspaceId=vmachine.cloudspaceId, userId=userId, accesstype="R", explicit=False)
+            self.cb.actors.cloudapi.cloudspaces.addUser(cloudspaceId=vmachine.cloudspaceId, userId=userId, accesstype=accesstype, explicit=False)
         try:
             j.apps.cloudapi.users.sendShareResourceEmail(user, 'machine', machineId, accesstype)
             return True
