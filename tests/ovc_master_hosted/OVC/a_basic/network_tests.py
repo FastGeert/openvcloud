@@ -63,10 +63,11 @@ class NetworkBasicTests(BasicACLTest):
             self.assertTrue(cloud_space_networkId[csNumbers] in released_network_Id)
         self.lg('%s ENDED' % self._testID)
 
-    def has_cloudspacebridges(self, cloudspaceId=None, nid=None):
+    def has_cloudspacebridges(self, cloudspaceId=None, nid=None, network_id=None):
         cloudspaceId = cloudspaceId or self.cloudspace_id
         nid = nid or self.get_physical_node_id(cloudspaceId)
-        hexNetworkID = '%04x' % self.get_cloudspace_network_id(cloudspaceId)
+        network_id = network_id or self.get_cloudspace_network_id(cloudspaceId)
+        hexNetworkID = '%04x' % network_id
         command = 'ls /sys/class/net'  # All created bridges in this node
         result = self.execute_command_on_physical_node(command, nid)
         return 'space_' + hexNetworkID in result
@@ -96,12 +97,16 @@ class NetworkBasicTests(BasicACLTest):
         self.api.cloudbroker.cloudspace.startVFW(self.cloudspace_id)
         self.lg('Make sure that the bridge is created')
         self.assertTrue(self.has_cloudspacebridges())
+        cloudspace = self.api.models.cloudspace.get(self.cloudspace_id)
+        network_id = cloudspace.networkId
+        vcl = j.clients.osis.getNamespace('vfw')
+        nid = vcl.virtualfirewall.get('{}_{}'.format(cloudspace.gid, network_id)).nid
 
         self.lg('Delete this cloudspace')
         self.account_owner_api.cloudapi.cloudspaces.delete(cloudspaceId=self.cloudspace_id, permanently=True)
 
         self.lg('Make sure that the bridge is deleted')
-        self.assertFalse(self.has_cloudspacebridges())
+        self.assertFalse(self.has_cloudspacebridges(nid=nid, network_id=network_id))
 
         self.lg('%s ENDED' % self._testID)
     
