@@ -1206,7 +1206,7 @@ class cloudapi_machines(BaseActor):
         vmachine = self.models.vmachine.get(machineId)
         cloudspaceacl = authenticator.auth().getCloudspaceAcl(vmachine.cloudspaceId)
         if userId not in cloudspaceacl:
-            self.cb.actors.cloudapi.cloudspaces.addUser(cloudspaceId=vmachine.cloudspaceId, userId=userId, accesstype=accesstype, explicit=False)
+            j.apps.cloudapi.cloudspaces.addUser(cloudspaceId=vmachine.cloudspaceId, userId=userId, accesstype=accesstype, explicit=False)
         try:
             j.apps.cloudapi.users.sendShareResourceEmail(user, 'machine', machineId, accesstype)
             return True
@@ -1310,7 +1310,7 @@ class cloudapi_machines(BaseActor):
             if not cloudspaceacl[userId].get('explicit', True):
                 matched_vms = self.models.cloudspace.search({'cloudspaceId':cloudspace.id, 'acl.userGroupId': userId, 'id': {'$ne': machineId}, '$fields': {'id'}})
                 if matched_vms[0] == 0:
-                    self.cb.actors.cloudapi.cloudspaces.deleteUser(cloudspaceId=cloudspace.id, userId=userId, recursivedelete=True)
+                    j.apps.cloudapi.cloudspaces.deleteUser(cloudspaceId=cloudspace.id, userId=userId, recursivedelete=True)
         if result['nModified'] == 0:
             # User was not found in access rights
             raise exceptions.NotFound('User "%s" does not have access on the machine' % userId)

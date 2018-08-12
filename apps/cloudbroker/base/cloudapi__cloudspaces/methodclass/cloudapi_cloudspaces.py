@@ -51,7 +51,7 @@ class cloudapi_cloudspaces(BaseActor):
         accountId = cloudspace.accountId
         accountacl = authenticator.auth().getAccountAcl(accountId)
         if userId not in accountacl:
-            self.cb.actors.cloudapi.accounts.addUser(accountId=accountId, userId=userId, accesstype="R", explicit=False)
+            j.apps.cloudapi.accounts.addUser(accountId=accountId, userId=userId, accesstype=accesstype, explicit=False)
         try:
             j.apps.cloudapi.users.sendShareResourceEmail(user, 'cloudspace', cloudspaceId, accesstype)
             return True
@@ -489,7 +489,7 @@ class cloudapi_cloudspaces(BaseActor):
                 # if user not in any other cloudspace just delete if from the account if it is not explicitly added
                 matched_cs = self.models.cloudspace.search({'accountId':accountId, 'acl.userGroupId': userId, 'id': {'$ne': cloudspaceId}, '$fields': {'id'}})
                 if matched_cs[0] == 0:
-                    self.cb.actors.cloudapi.accounts.deleteUser(accountId=accountId, userId=userId, recursivedelete=True)
+                    j.apps.cloudapi.accounts.deleteUser(accountId=accountId, userId=userId, recursivedelete=True)
 
         if recursivedelete:
             # Delete user accessrights from related machines (part of owned cloudspaces)
