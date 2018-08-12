@@ -30,6 +30,7 @@ class Read(ACLCLOUDSPACE):
         #. try get cloudspace1 with user2, should fail '403 Forbidden'
         #. add user1 to the cloudspace owned by user2
         #. get cloudspace1 with user1, should succeed
+        #. get account with user1
         #. delete account.
         #. get account2 with user1, should fail '404 Not Found'
         """
@@ -60,13 +61,17 @@ class Read(ACLCLOUDSPACE):
         cloudspace1 = self.user_api.cloudapi.cloudspaces.get(cloudspaceId=cloudspace_id)
         self.assertEqual(cloudspace1['id'], cloudspace_id)
 
-        self.lg('5- delete account: %s' % self.account_id)
+        self.lg('5- get account with user1')
+        account = self.user_api.cloudapi.accounts.get(accountId=cloudspace1['accountId'])
+        self.assertEqual(account['id'], cloudspace1['accountId'])
+
+        self.lg('6- delete account: %s' % self.account_id)
         self.api.cloudbroker.account.delete(accountId=self.account_id,  reason='testing', permanently=True)
         self.wait_for_status('DESTROYED', self.api.cloudapi.accounts.get,
                              accountId=self.account_id)
         self.CLEANUP['accountId'].remove(self.account_id)
 
-        self.lg('6- get cloudspace2 with user1')
+        self.lg('7- get cloudspace2 with user1')
         try:
             self.user_api.cloudapi.cloudspaces.get(cloudspaceId=cloudspace_id)
         except ApiError as e:
