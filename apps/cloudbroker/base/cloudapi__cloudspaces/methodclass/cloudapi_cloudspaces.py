@@ -285,7 +285,7 @@ class cloudapi_cloudspaces(BaseActor):
                 self.models.cloudspace.set(cs)
             pool = self.models.externalnetwork.get(cs.externalnetworkId)
 
-            if cs.externalnetworkip is None:
+            if not cs.externalnetworkip:
                 pool, externalipaddress = self.network.getExternalIpAddress(cs.gid, cs.externalnetworkId)
                 cs.externalnetworkip = str(externalipaddress)
                 self.models.cloudspace.updateSearch({'id': cs.id},
