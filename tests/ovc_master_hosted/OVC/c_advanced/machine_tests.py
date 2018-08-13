@@ -59,7 +59,7 @@ class MachineTests(BasicACLTest):
         time.sleep(15)
 
         self.lg('From VM1 ping google, should succeed')
-        stdin, stdout, stderr = machine_1_client.execute('ping -w3 8.8.8.8')
+        stdin, stdout, stderr = machine_1_client.execute('ping -c3 8.8.8.8')
         self.assertIn('3 received', stdout.read())
 
         self.lg('From VM1 ping VM3 or VM2, should fail')
@@ -73,7 +73,7 @@ class MachineTests(BasicACLTest):
         self.assertIn(', 100% packet loss', stdout.read())
 
         self.lg('From VM2 ping VM3, should succeed')
-        cmd = 'ping -w3 {}'.format(machine_3_ipaddress)
+        cmd = 'ping -c3 {}'.format(machine_3_ipaddress)
         stdin, stdout, stderr = machine_2_client.execute(cmd)
         self.assertIn('3 received', stdout.read())
 
