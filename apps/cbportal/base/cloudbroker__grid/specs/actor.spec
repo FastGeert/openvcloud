@@ -48,6 +48,12 @@
         """
         result: str
 
+    method:upgradeFailed
+        """
+        Set status of current installing version to Error
+        """
+        result: str
+
     method:changeSettings
         """
         changes grid settings

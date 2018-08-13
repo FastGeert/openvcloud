@@ -93,6 +93,12 @@ class cloudbroker_grid(BaseActor):
                                             {'$set': {'status': 'CURRENT', 'updateTime': j.base.time.getTimeEpoch() }})
         return 'Upgrade script ran successfully'
 
+
+    @auth(groups=['level1', 'level2', 'level3'], skipversioncheck=True)
+    def upgradeFailed(self, **kwargs):
+        result = self.sysmodels.version.updateSearch({'status': 'INSTALLING'}, {'$set': {'status': 'ERROR'}})
+        return bool(result['nModified'])
+
     @auth(groups=['level1', 'level2', 'level3'])
     def changeSettings(self, id, settings, **kwargs):
         if self.sysmodels.grid.count({'id': id}) == 0:
