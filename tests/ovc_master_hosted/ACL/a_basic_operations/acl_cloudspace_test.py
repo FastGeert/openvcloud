@@ -112,7 +112,7 @@ class Read(ACLCLOUDSPACE):
 
         self.lg('5- Try list user\'s cloud spaces,')
         cloudspaces = self.user_api.cloudapi.cloudspaces.list()
-        self.assertEqual(len(cloudspaces), 1, 'Failed to list all user\'s cloud spaces!')
+        self.assertEqual(len(cloudspaces), 2, 'Failed to list all user\'s cloud spaces!')
 
         self.lg('6- Verify that ACL rights for the account owner is ACDRUX and for user is R only')
         acl = cloudspaces[0]['acl']
@@ -126,7 +126,7 @@ class Read(ACLCLOUDSPACE):
 
         self.lg('8- Try list user\'s cloud spaces,')
         cloudspaces = self.user_api.cloudapi.cloudspaces.list()
-        self.assertEqual(len(cloudspaces), 1, 'Failed to list all user\'s cloud spaces!')
+        self.assertEqual(len(cloudspaces), 3, 'Failed to list all user\'s cloud spaces!')
 
         self.lg('%s ENDED' % self._testID)
 
@@ -153,13 +153,14 @@ class Read(ACLCLOUDSPACE):
 
         self.lg('3- Try list user\'s cloud spaces,')
         cloudspaces = self.user_api.cloudapi.cloudspaces.list()
-        self.assertEqual(len(cloudspaces), 1, 'Failed to list all user\'s cloud spaces!')
+        self.assertEqual(len(cloudspaces), 2, 'Failed to list all user\'s cloud spaces!')
 
         self.lg('4- Delete the newly created cloud space')
         self.account_owner_api.cloudapi.cloudspaces.delete(cloudspaceId=cloudspace_id, permanently=True)
 
         self.lg('5- Try list user\'s cloud spaces,')
-        self.assertFalse(self.user_api.cloudapi.cloudspaces.list(), 'This list should be empty!')
+        cloudspaces = self.user_api.cloudapi.cloudspaces.list()
+        self.assertEqual(len(cloudspaces), 1)
 
         self.lg('%s ENDED' % self._testID)
 

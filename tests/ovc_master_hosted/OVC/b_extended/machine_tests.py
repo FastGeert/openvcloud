@@ -150,6 +150,7 @@ class ExtendedTests(BasicACLTest):
             d_type = 'B'
         else:
             d_type = 'D'
+            
         self.lg("List the %s disks, DS1 shouldn't be found."% d_type)
         disks = self.api.cloudapi.disks.list(accountId=self.account_id, type=d_type)
         self.assertFalse([True for d in disks if d['id'] == disk_id])
@@ -168,6 +169,9 @@ class ExtendedTests(BasicACLTest):
         self.lg("Make sure that disk status has changed to TOBEDELETED")
         disk = self.api.cloudapi.disks.get(disk_id)
         self.assertEqual(disk['status'], 'TOBEDELETED')
+
+        self.lg('Delete disk DS1 permanently, should succeed')
+        self.api.cloudapi.disks.delete(diskId=disk_id, permanently=True)
 
         self.lg("List the %s disks, DS1 shouldn't be there."% disk_type)
         disks = self.api.cloudapi.disks.list(accountId=self.account_id, type=disk_type)
@@ -226,9 +230,6 @@ class ExtendedTests(BasicACLTest):
         self.lg('- expected error raised %s' % e.exception.status_code)
         self.assertEqual(e.exception.status_code, 409)
 
-        self.lg('- expected error raised %s' % e.exception.status_code)
-        self.assertEqual(e.exception.status_code, 404)
-
         self.lg("Detach DS1, should succeed")
         response = self.api.cloudapi.machines.detachDisk(machineId=VM1_id, diskId=disk_id)
         self.assertTrue(response)
@@ -238,6 +239,7 @@ class ExtendedTests(BasicACLTest):
         self.assertEqual(disk['status'], 'CREATED')
 
         self.lg('%s ENDED' % self._testID)
+
     def test006_attach_disk_to_vm_of_another_account(self):
         """ OVC-030
         *Test case for attaching disk to a vm of another account*

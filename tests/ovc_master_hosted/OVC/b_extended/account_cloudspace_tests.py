@@ -112,28 +112,28 @@ class ExtendedTests(BasicACLTest):
         self.lg('- create VM with exceeding cloudspace\'s cores number (Mem=16, C=8), '
                 'should fail as (c=8)>4')
         try:
-            self.cloudapi_create_machine(cloudspaceId, self.account_owner_api, size_id=5)
+            self.cloudapi_create_machine(cloudspaceId, self.account_owner_api, memory=16*1024, vcpus=8)
         except ApiError as e:
             self.lg('- expected error raised %s' % e.message)
             self.assertEqual(e.message, '400 Bad Request')
 
         self.lg('- create VM with (Mem=8, C=4), should fail as (M=8)>2')
         try:
-            self.cloudapi_create_machine(cloudspaceId, self.account_owner_api, size_id=4)
+            self.cloudapi_create_machine(cloudspaceId, self.account_owner_api, memory=8*1024, vcpus=4)
         except ApiError as e:
             self.lg('- expected error raised %s' % e.message)
             self.assertEqual(e.message, '400 Bad Request')
 
         self.lg('- create VM with (BD=100), should fail as (BD=100)>60')
         try:
-            self.cloudapi_create_machine(cloudspaceId, self.account_owner_api, disksize=10)
+            self.cloudapi_create_machine(cloudspaceId, self.account_owner_api, disksize=100)
         except ApiError as e:
             self.lg('- expected error raised %s' % e.message)
             self.assertEqual(e.message, '400 Bad Request')
 
 
         self.lg('- create VM with allowed limits, should succeed')
-        machineId = self.cloudapi_create_machine(cloudspaceId, self.account_owner_api)
+        machineId = self.cloudapi_create_machine(cloudspaceId, self.account_owner_api, memory=1024*1, vcpus=2)
 
         self.lg('- Add publicip to this VM, should fail as max_IPs=1')
         try:
