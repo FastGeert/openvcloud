@@ -26,6 +26,8 @@ EOF
 id                             = '66'
 node.id                        = ''
 node.machineguid               = '${machineid}'
+node.roles                     =
+     'node',
 
 EOF
 }
