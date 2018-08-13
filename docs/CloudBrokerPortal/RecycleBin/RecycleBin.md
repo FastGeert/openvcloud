@@ -1,6 +1,6 @@
 ## Recycle Bin
 
-Recycle Bin page lists all deleted accounts, cloudspaces, Virtual Machines (VMs), disks, images, and iso images unless deleted permanently. The Recycle Bin allows to recover objects within [`delete retention period`](#delete retention period), whereafter the objects are deleted permanently and cannot be restored.
+Recycle Bin page lists all deleted accounts, cloudspaces, Virtual Machines (VMs), disks, images, and iso images unless deleted permanently. The Recycle Bin allows to recover objects within [`delete retention period`](#delete-retention-period), whereafter the objects are deleted permanently and cannot be restored.
 
 ![](RecycleBin.png)
 
