@@ -63,9 +63,10 @@ class CloudspaceTests(BasicACLTest):
         self.assertEqual(e.exception.status_code, 409)
 
         self.lg('4- Delete the cloudspace with destroy, should succeed')
-        self.api.cloudbroker.cloudspace.destroy(accountId= self.account_id,
-                                                cloudspaceId=cloudspace_id,
-                                                reason='test')
+        self.api.cloudbroker.cloudspace.destroy(cloudspaceId=cloudspace_id,
+                                                reason='test',
+                                                permanently=True)
+
         self.wait_for_status('DESTROYED', self.api.cloudapi.cloudspaces.get,
                              cloudspaceId=cloudspace_id)
 
