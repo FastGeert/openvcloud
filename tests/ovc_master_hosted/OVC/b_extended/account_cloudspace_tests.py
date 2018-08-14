@@ -357,9 +357,16 @@ class ExtendedTests(BasicACLTest):
         session = requests.Session()
         session.post(url=login_url, data=credential)
         api_url = url + '/restmachine/cloudapi/accounts/getConsumption?accountId={}&start={}&end={}'.format(self.account_id, start, end)
-        response = session.get(url=api_url)
-        self.assertEqual(response.status_code, 200)
 
+        for _ in range(60):
+            response = session.get(url=api_url)
+            if response.status_code == 200:
+                if 'account_capnp.bin' in response.text:
+                    break
+            time.sleep(1)
+        else:
+            self.fail('Consumption data is empty')
+                     
         self.lg('Writing capnp schema into a file')
         first_part = '        @0x934efea7f327fff0;'
         second_part = """

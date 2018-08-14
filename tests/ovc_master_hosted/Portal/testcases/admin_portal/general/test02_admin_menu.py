@@ -36,7 +36,7 @@ class AdminMenu(Framework):
         self.lg("check left menu")
         self.LeftNavigationMenu.compare_original_list_with_exist_list("", "left_menu", compo_menu)
         self.lg("check cloudbroker menu")
-        self.LeftNavigationMenu.compare_original_list_with_exist_list("cloudbroker_arrow", "cloudbroker_menu",
+        self.LeftNavigationMenu.compare_original_list_with_exist_list("", "cloudbroker_menu",
                                                                       cloud_broker_menu)
         self.lg("check grid menu")
         self.LeftNavigationMenu.compare_original_list_with_exist_list("grid_arrow", "grid_menu", grid_menu)
