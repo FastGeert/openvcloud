@@ -300,10 +300,10 @@ class ExtendedTests(BasicACLTest):
                                                        allowedVMSizes=allowed_sizes)
 
         self.lg('2- Create VM1 with unallowed size, should fail')
-        with self.assertRaises(ApiError) as e:
+        with self.assertRaises(HTTPError) as e:
             self.cloudapi_create_machine(cloudspace_id=cloudspaceId, size_id=unallowed_size)
         
-        self.assertEqual(e.exception.message, '400 Bad Request')
+        self.assertEqual(e.exception.status_code, 400)
 
         self.lg('%s ENDED' % self._testID)
 

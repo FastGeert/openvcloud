@@ -455,6 +455,10 @@ class Machine(object):
         if not disksize:
             raise exceptions.BadRequest("Invalid disksize %s" % disksize)
 
+        if cloudspace.allowedVMSizes:
+            if sizeId and sizeId not in cloudspace.allowedVMSizes:
+                raise exceptions.BadRequest("Specified size not allowed for this cloudspace")
+
         for datadisksize in datadisks:
             if datadisksize > 2000:
                 raise exceptions.BadRequest("Invalid data disk size {}GB max size is 2000GB".format(datadisksize))
