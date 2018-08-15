@@ -111,7 +111,7 @@ def action(networkid, publicip, publicgwip, publiccidr, password, vlan, privaten
 
             print 'Starting VM'
             try:
-                domuuid = j.clients.redisworker.execFunction(createVM, _queue='hypervisor', xml=xmlsource)
+                domuuid = j.clients.redisworker.execFunction(createVM, _queue='hypervisor', xml=xmlsource, _timeout=180)
             except Exception, e:
                 raise RuntimeError("Could not create VFW vm from template, network id:%s:%s\n%s" % (networkid, networkidHex, e))
         print 'Protect network'
