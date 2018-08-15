@@ -16,9 +16,9 @@ class cloudapi_images(BaseActor):
         """
         fields = ['id', 'name', 'description', 'type', 'size', 'username', 'accountId', 'status']
         if accountId:
-            q = {'referenceId': {'$ne': None}, 'status': resourcestatus.Image.CREATED, 'accountId': {"$in": [0, int(accountId)]}}
+            q = {'referenceId': {'$nin': ['', None]}, 'status': resourcestatus.Image.CREATED, 'accountId': {"$in": [0, int(accountId)]}}
         else:
-            q = {'referenceId': {'$ne': None}, 'status': resourcestatus.Image.CREATED, 'accountId': 0}
+            q = {'referenceId': {'$nin': ['', None]}, 'status': resourcestatus.Image.CREATED, 'accountId': 0}
         query = {'$query': q, '$fields': fields}
 
         if cloudspaceId:
