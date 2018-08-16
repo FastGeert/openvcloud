@@ -1,5 +1,6 @@
 @usedefaults
 {{vmachine}}
+{% if name %}
 h2. Virtual Machine: ${name}
 {% if status != "DESTROYED" %}
 
@@ -19,3 +20,6 @@ h2. Virtual Machine: ${name}
 {% else -%}
 Console is only available for running machines
 {% endif -%}
+{% else %}
+Invalid machine
+{% endif %}
