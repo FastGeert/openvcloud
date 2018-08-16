@@ -1,6 +1,7 @@
 from libcloud.compute.types import Provider
 from libcloud.compute.providers import get_driver
 
+
 class BaseEnum(object):
     _ENUMS = list()
 
@@ -9,12 +10,12 @@ class BaseEnum(object):
         for enum in cls._ENUMS:
             setattr(cls, enum, enum)
 
+
 class MapEnum(BaseEnum):
-    
     class Maaper(object):
         def __init__(self, provider):
             self.name = provider.name
-        
+
         def __str__(self):
             return self.name
 
@@ -35,16 +36,12 @@ class MapEnum(BaseEnum):
             if value == num:
                 return name
 
+
 class MachineStatusMap(MapEnum):
-    _ENUMS = {'libvirt':{'RUNNING': 1,
-                         'HALTED': 5,
-                         'PAUSED': 3},
-              
-              'openstack':{
-                        'RUNNING': 0,
-                        'HALTED': 2,
-                        'PAUSED': 4,
-                        'PENDING':3}
-              }
+    _ENUMS = {
+        "libvirt": {"RUNNING": 1, "HALTED": 5, "PAUSED": 3},
+        "openstack": {"RUNNING": 0, "HALTED": 2, "PAUSED": 4, "PENDING": 3},
+    }
+
 
 MachineStatusMap._init()

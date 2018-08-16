@@ -5,6 +5,7 @@ from random import randint
 from ....utils.utils import BasicACLTest
 from JumpScale.portal.portal.PortalClient2 import ApiError
 
+
 class ACLACCOUNT(BasicACLTest):
     def setUp(self):
         super(ACLACCOUNT, self).setUp()
@@ -12,7 +13,6 @@ class ACLACCOUNT(BasicACLTest):
 
 
 class level1_group(ACLACCOUNT):
-
     def test001_level1_and_accounts(self):
         """ ACL-61
         *Test case for  user with level1+admin groups dealing with accounts .*
@@ -29,65 +29,76 @@ class level1_group(ACLACCOUNT):
         #. delete user1 from created account should return succeed
         #. delete created account by user 1 should return succeed
         """
-        self.lg('%s STARTED' % self._testID)
-        self.user_group=['admin','level1']
-        self.lg('create user1 and user2  with level1 + admin group')
-        self.user1 = self.cloudbroker_user_create(group = self.user_group )
-        self.user2 = self.cloudbroker_user_create(group = self.user_group )
+        self.lg("%s STARTED" % self._testID)
+        self.user_group = ["admin", "level1"]
+        self.lg("create user1 and user2  with level1 + admin group")
+        self.user1 = self.cloudbroker_user_create(group=self.user_group)
+        self.user2 = self.cloudbroker_user_create(group=self.user_group)
 
-        self.lg('1- create user1 %s with level1 and admin  domain ' % self.user1)
-        self.lg('- create user2 %s with level1 and admin  domain ' % self.user2)
+        self.lg("1- create user1 %s with level1 and admin  domain " % self.user1)
+        self.lg("- create user2 %s with level1 and admin  domain " % self.user2)
 
         self.user1_api = self.get_authenticated_user_api(self.user1)
         self.user2_api = self.get_authenticated_user_api(self.user2)
 
-        self.lg(' 2- create account with user 1  ' )
+        self.lg(" 2- create account with user 1  ")
 
-
-
-        accountId = self.user1_api.cloudbroker.account.create(name=self.user1, username=self.user1, email='%s@gmail.com'%self.user1,
-                                                        maxMemoryCapacity=-1,
-                                                        maxVDiskCapacity=-1,
-                                                        maxCPUCapacity=-1,
-                                                        maxNumPublicIP=-1)
+        accountId = self.user1_api.cloudbroker.account.create(
+            name=self.user1,
+            username=self.user1,
+            email="%s@gmail.com" % self.user1,
+            maxMemoryCapacity=-1,
+            maxVDiskCapacity=-1,
+            maxCPUCapacity=-1,
+            maxNumPublicIP=-1,
+        )
         self.assertTrue(accountId)
 
-        self.lg(' 3- disable account 1 by user 2  ' )
+        self.lg(" 3- disable account 1 by user 2  ")
 
-        response = self.user2_api.cloudbroker.account.disable(accountId = accountId , reason =" test" )
+        response = self.user2_api.cloudbroker.account.disable(
+            accountId=accountId, reason=" test"
+        )
         self.assertTrue(response)
-        self.lg(' 4- update account 1 by user 2  ' )
+        self.lg(" 4- update account 1 by user 2  ")
 
-        response = self.user2_api.cloudbroker.account.update(accountId = accountId , name = self.user2 )
+        response = self.user2_api.cloudbroker.account.update(
+            accountId=accountId, name=self.user2
+        )
         self.assertTrue(response)
-        details= self.user2_api.cloudapi.accounts.get(accountId=accountId)
-        self.assertEqual(details["name"],self.user2)
+        details = self.user2_api.cloudapi.accounts.get(accountId=accountId)
+        self.assertEqual(details["name"], self.user2)
 
-        self.lg(' 5- enable account 1 by user 2  ' )
+        self.lg(" 5- enable account 1 by user 2  ")
 
-        response = self.user2_api.cloudbroker.account.enable(accountId = accountId , reason = "test" )
-        self.assertTrue(response)
-
-        self.lg('6- get list of account of user2 ')
-        account_list=self.user2_api.cloudapi.accounts.list()
-        self.assertEqual(account_list,[])
-        self.lg('7- add user 2 to account ')
-
-        response = self.user2_api.cloudbroker.account.addUser(accountId = accountId , username = self.user2, accesstype = 'ARCXDU' )
-        self.lg('%s'% response)
+        response = self.user2_api.cloudbroker.account.enable(
+            accountId=accountId, reason="test"
+        )
         self.assertTrue(response)
 
-        self.lg(' 8- delete user1 from created account ')
+        self.lg("6- get list of account of user2 ")
+        account_list = self.user2_api.cloudapi.accounts.list()
+        self.assertEqual(account_list, [])
+        self.lg("7- add user 2 to account ")
 
-
-
-        response = self.user2_api.cloudbroker.account.deleteUser(accountId = accountId , username = self.user1,recursivedelete='true' )
+        response = self.user2_api.cloudbroker.account.addUser(
+            accountId=accountId, username=self.user2, accesstype="ARCXDU"
+        )
+        self.lg("%s" % response)
         self.assertTrue(response)
 
-        self.lg('9-delete created account by user1 ')
+        self.lg(" 8- delete user1 from created account ")
 
-        self.user1_api.cloudbroker.account.delete(accountId = accountId ,reason="test", permanently=True)
+        response = self.user2_api.cloudbroker.account.deleteUser(
+            accountId=accountId, username=self.user1, recursivedelete="true"
+        )
+        self.assertTrue(response)
 
+        self.lg("9-delete created account by user1 ")
+
+        self.user1_api.cloudbroker.account.delete(
+            accountId=accountId, reason="test", permanently=True
+        )
 
     def test002_level1_and_cloudspaces(self):
         """ ACL-62
@@ -111,80 +122,102 @@ class level1_group(ACLACCOUNT):
         #. destroy cloudspace1 by user2 should be succeed
 
         """
-        self.lg('%s STARTED' % self._testID)
-        self.user_group=['admin', 'level1']
-        self.lg('create user1 and user2  with level1 + admin group')
+        self.lg("%s STARTED" % self._testID)
+        self.user_group = ["admin", "level1"]
+        self.lg("create user1 and user2  with level1 + admin group")
         self.user1 = self.cloudbroker_user_create(group=self.user_group)
         self.user2 = self.cloudbroker_user_create(group=self.user_group)
 
-        self.lg('- create user1 %s with level1 and admin  domain ' % self.user1)
-        self.lg('- create user2 %s with level1 and admin  domain ' % self.user2)
+        self.lg("- create user1 %s with level1 and admin  domain " % self.user1)
+        self.lg("- create user2 %s with level1 and admin  domain " % self.user2)
 
         self.user1_api = self.get_authenticated_user_api(self.user1)
         self.user2_api = self.get_authenticated_user_api(self.user2)
-        self.lg('- create 2 cloudspaces one by user1 and another by user2')
+        self.lg("- create 2 cloudspaces one by user1 and another by user2")
 
-        cloudspaceId1 = self.cloudbroker_cloudspace_create(account_id=self.account_id,location=self.location,access=self.user2,api=self.user2_api)
-        cloudspaceId2 = self.cloudbroker_cloudspace_create(account_id=self.account_id,location=self.location,access=self.user1,api=self.user1_api)
-        cloudspaceId3 = self.cloudbroker_cloudspace_create(account_id=self.account_id,location=self.location,access=self.user1,api=self.user1_api)
+        cloudspaceId1 = self.cloudbroker_cloudspace_create(
+            account_id=self.account_id,
+            location=self.location,
+            access=self.user2,
+            api=self.user2_api,
+        )
+        cloudspaceId2 = self.cloudbroker_cloudspace_create(
+            account_id=self.account_id,
+            location=self.location,
+            access=self.user1,
+            api=self.user1_api,
+        )
+        cloudspaceId3 = self.cloudbroker_cloudspace_create(
+            account_id=self.account_id,
+            location=self.location,
+            access=self.user1,
+            api=self.user1_api,
+        )
 
-        self.lg('- update cloudspace name by user1')
+        self.lg("- update cloudspace name by user1")
 
-
-        response= self.user1_api.cloudbroker.cloudspace.update(cloudspaceId = cloudspaceId1,name=self.account_owner)
+        response = self.user1_api.cloudbroker.cloudspace.update(
+            cloudspaceId=cloudspaceId1, name=self.account_owner
+        )
         self.assertTrue(response)
 
-        self.lg('- deploy VFW')
+        self.lg("- deploy VFW")
         try:
-            self.user1_api.cloudbroker.cloudspace.deployVFW(cloudspaceId = cloudspaceId1)
-        except ApiError as e :
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbbiden')
-        self.lg('- start VFW')
+            self.user1_api.cloudbroker.cloudspace.deployVFW(cloudspaceId=cloudspaceId1)
+        except ApiError as e:
+            self.lg("- expected error raised %s" % e.message)
+            self.assertEqual(e.message, "403 Forbbiden")
+        self.lg("- start VFW")
 
-        response= self.user1_api.cloudbroker.cloudspace.startVFW(cloudspaceId = cloudspaceId1)
+        response = self.user1_api.cloudbroker.cloudspace.startVFW(
+            cloudspaceId=cloudspaceId1
+        )
         self.assertTrue(response)
-        self.lg('- reset VFW')
+        self.lg("- reset VFW")
 
-        #Skip https://github.com/0-complexity/openvcloud/issues/706
+        # Skip https://github.com/0-complexity/openvcloud/issues/706
         # try:
         #    self.user1_api.cloudbroker.cloudspace.resetVFW(cloudspaceId = cloudspaceId1)
 
         # except ApiError as e :
         #    self.lg('- expected error raised %s' % e.message)
         #   self.assertEqual(e.message, '403 Forbbiden')
-        self.lg('- stop VFW')
+        self.lg("- stop VFW")
         try:
-            self.user1_api.cloudbroker.cloudspace.stopVFW(cloudspaceId = cloudspaceId1)
-        except ApiError as e :
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbbiden')
-        self.lg('- destroy VFW')
+            self.user1_api.cloudbroker.cloudspace.stopVFW(cloudspaceId=cloudspaceId1)
+        except ApiError as e:
+            self.lg("- expected error raised %s" % e.message)
+            self.assertEqual(e.message, "403 Forbbiden")
+        self.lg("- destroy VFW")
         try:
-            self.user1_api.cloudbroker.cloudspace.destroyVFW(cloudspaceId = cloudspaceId1)
+            self.user1_api.cloudbroker.cloudspace.destroyVFW(cloudspaceId=cloudspaceId1)
 
-        except ApiError as e :
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbbiden')
+        except ApiError as e:
+            self.lg("- expected error raised %s" % e.message)
+            self.assertEqual(e.message, "403 Forbbiden")
 
-        self.lg('- add user1 to cloudspace')
+        self.lg("- add user1 to cloudspace")
 
-        response= self.user1_api.cloudbroker.cloudspace.addUser(cloudspaceId = cloudspaceId1,username=self.user1,accesstype='ARCXDU')
+        response = self.user1_api.cloudbroker.cloudspace.addUser(
+            cloudspaceId=cloudspaceId1, username=self.user1, accesstype="ARCXDU"
+        )
         self.assertTrue(response)
 
+        self.lg("- delete user2 from cloudspace1")
 
-
-        self.lg('- delete user2 from cloudspace1')
-
-        response= self.user1_api.cloudbroker.cloudspace.deleteUser(cloudspaceId = cloudspaceId1,username=self.user2,recursivedelete='true')
+        response = self.user1_api.cloudbroker.cloudspace.deleteUser(
+            cloudspaceId=cloudspaceId1, username=self.user2, recursivedelete="true"
+        )
         self.assertTrue(response)
 
-        self.lg('-destroy  cloudspace1')
+        self.lg("-destroy  cloudspace1")
 
-        self.user2_api.cloudbroker.cloudspace.destroy(cloudspaceId = cloudspaceId1,reason="test", permanently=True)
-        self.wait_for_status('DESTROYED', self.api.cloudapi.cloudspaces.get,cloudspaceId= cloudspaceId1)
-
-
+        self.user2_api.cloudbroker.cloudspace.destroy(
+            cloudspaceId=cloudspaceId1, reason="test", permanently=True
+        )
+        self.wait_for_status(
+            "DESTROYED", self.api.cloudapi.cloudspaces.get, cloudspaceId=cloudspaceId1
+        )
 
     def test003_level1_and_VMS(self):
 
@@ -209,92 +242,120 @@ class level1_group(ACLACCOUNT):
         #. try sync avaialble images to cloud broker should return succeed
         #. try Sync available sizes to Cloud Broker should return succeed
         """
-        self.lg('%s STARTED' % self._testID)
-        self.user_group=['admin','level1']
-        self.lg('create user1 and user2  with level1 + admin group')
-        self.user1 = self.cloudbroker_user_create(group = self.user_group )
-        self.user2 = self.cloudbroker_user_create(group = self.user_group )
+        self.lg("%s STARTED" % self._testID)
+        self.user_group = ["admin", "level1"]
+        self.lg("create user1 and user2  with level1 + admin group")
+        self.user1 = self.cloudbroker_user_create(group=self.user_group)
+        self.user2 = self.cloudbroker_user_create(group=self.user_group)
 
-        self.lg('- create user1 %s with level1 and admin  domain ' % self.user1)
-        self.lg('- create user2 %s with level1 and admin  domain ' % self.user2)
+        self.lg("- create user1 %s with level1 and admin  domain " % self.user1)
+        self.lg("- create user2 %s with level1 and admin  domain " % self.user2)
 
         self.user1_api = self.get_authenticated_user_api(self.user1)
         self.user2_api = self.get_authenticated_user_api(self.user2)
-        self.lg('- create cloudspace ')
-        cloudspaceId1 = self.cloudbroker_cloudspace_create(account_id=self.account_id,location=self.location,access=self.account_owner,api=self.user1_api)
-        self.lg('- create VM1 by user1')
-        machine1_id = self.cloudbroker_create_machine(cloudspace_id=cloudspaceId1,api=self.user1_api)
-        self.lg('- create VM2 by user2')
-        machine2_id = self.cloudbroker_create_machine(cloudspace_id=cloudspaceId1,api=self.user2_api)
-        self.lg('- add user2 to vm1 ')
-        response= self.user2_api.cloudbroker.machine.addUser(machineId=machine1_id,username= self.user2 ,accesstype='ARCXDU')
+        self.lg("- create cloudspace ")
+        cloudspaceId1 = self.cloudbroker_cloudspace_create(
+            account_id=self.account_id,
+            location=self.location,
+            access=self.account_owner,
+            api=self.user1_api,
+        )
+        self.lg("- create VM1 by user1")
+        machine1_id = self.cloudbroker_create_machine(
+            cloudspace_id=cloudspaceId1, api=self.user1_api
+        )
+        self.lg("- create VM2 by user2")
+        machine2_id = self.cloudbroker_create_machine(
+            cloudspace_id=cloudspaceId1, api=self.user2_api
+        )
+        self.lg("- add user2 to vm1 ")
+        response = self.user2_api.cloudbroker.machine.addUser(
+            machineId=machine1_id, username=self.user2, accesstype="ARCXDU"
+        )
         self.assertTrue(response)
-        self.lg('- delete user2 from vm1')
+        self.lg("- delete user2 from vm1")
 
-
-        response= self.user2_api.cloudbroker.machine.deleteUser(machineId=machine1_id,username= self.user2)
-        self.assertTrue(response)
-
-        self.lg('start,then puase,then resume vm1 by user 2')
-
-        self.user2_api.cloudbroker.machine.start(machineId=machine1_id,reason="test")
-        self.assertEqual(self.api.cloudapi.machines.get(machineId=machine1_id)['status'],
-                             'RUNNING')
-        self.user2_api.cloudbroker.machine.pause(machineId=machine1_id,reason="test")
-        self.assertEqual(self.api.cloudapi.machines.get(machineId=machine1_id)['status'],
-                             'PAUSED')
-
-        self.user2_api.cloudbroker.machine.resume(machineId=machine1_id,reason="test")
-        self.assertEqual(self.api.cloudapi.machines.get(machineId=machine1_id)['status'],
-                             'RUNNING')
-        self.lg('stop vm1 then reboot it by user2 ')
-
-        self.user2_api.cloudbroker.machine.stop(machineId=machine1_id,reason="test")
-        self.assertEqual(self.api.cloudapi.machines.get(machineId=machine1_id)['status'],
-                             'HALTED')
-
-        self.user2_api.cloudbroker.machine.reboot(machineId=machine1_id,reason="test")
-        self.assertEqual(self.api.cloudapi.machines.get(machineId=machine1_id)['status'],
-                             'RUNNING')
-
-        self.lg('list machines in cloudspace by user2')
-
-
-        response=self.user2_api.cloudbroker.machine.list(cloudspaceId=cloudspaceId1)
+        response = self.user2_api.cloudbroker.machine.deleteUser(
+            machineId=machine1_id, username=self.user2
+        )
         self.assertTrue(response)
 
-        self.lg('take snapeshots')
+        self.lg("start,then puase,then resume vm1 by user 2")
+
+        self.user2_api.cloudbroker.machine.start(machineId=machine1_id, reason="test")
+        self.assertEqual(
+            self.api.cloudapi.machines.get(machineId=machine1_id)["status"], "RUNNING"
+        )
+        self.user2_api.cloudbroker.machine.pause(machineId=machine1_id, reason="test")
+        self.assertEqual(
+            self.api.cloudapi.machines.get(machineId=machine1_id)["status"], "PAUSED"
+        )
+
+        self.user2_api.cloudbroker.machine.resume(machineId=machine1_id, reason="test")
+        self.assertEqual(
+            self.api.cloudapi.machines.get(machineId=machine1_id)["status"], "RUNNING"
+        )
+        self.lg("stop vm1 then reboot it by user2 ")
+
+        self.user2_api.cloudbroker.machine.stop(machineId=machine1_id, reason="test")
+        self.assertEqual(
+            self.api.cloudapi.machines.get(machineId=machine1_id)["status"], "HALTED"
+        )
+
+        self.user2_api.cloudbroker.machine.reboot(machineId=machine1_id, reason="test")
+        self.assertEqual(
+            self.api.cloudapi.machines.get(machineId=machine1_id)["status"], "RUNNING"
+        )
+
+        self.lg("list machines in cloudspace by user2")
+
+        response = self.user2_api.cloudbroker.machine.list(cloudspaceId=cloudspaceId1)
+        self.assertTrue(response)
+
+        self.lg("take snapeshots")
         try:
-            self.user2_api.cloudbroker.machine.snapshot(machineId=machine1_id,snapshotName=self.user1,reason="test")
+            self.user2_api.cloudbroker.machine.snapshot(
+                machineId=machine1_id, snapshotName=self.user1, reason="test"
+            )
 
-        except ApiError as e :
-            self.lg('-expected error raised %s' % e.message)
-            self.assertEqual(e.message,'403 Forbidden')
+        except ApiError as e:
+            self.lg("-expected error raised %s" % e.message)
+            self.assertEqual(e.message, "403 Forbidden")
 
-        self.lg('list snapeshots')
+        self.lg("list snapeshots")
 
-        self.listsnapshots=self.user2_api.cloudbroker.machine.listSnapshots(machineId=machine1_id,result="test")
+        self.listsnapshots = self.user2_api.cloudbroker.machine.listSnapshots(
+            machineId=machine1_id, result="test"
+        )
         self.assertTrue(self.listsnapshots)
         self.epoch_snapshot = self.listsnapshots[0]["epoch"]
 
-        self.lg('Rollback virtual machine to a snapshot ')
+        self.lg("Rollback virtual machine to a snapshot ")
 
         try:
-            self.user2_api.cloudbroker.machine.stop(machineId=machine1_id,reason="test")
-            self.user2_api.cloudbroker.machine.rollbackSnapshot(machineId=machine1_id,epoch=self.epoch_snapshot,reason="test")
-        except ApiError as e :
-            self.lg('-expected error raised %s' % e.message)
-            self.assertEqual(e.message,'403 Forbidden')
-        self.lg('delete snapshot')
+            self.user2_api.cloudbroker.machine.stop(
+                machineId=machine1_id, reason="test"
+            )
+            self.user2_api.cloudbroker.machine.rollbackSnapshot(
+                machineId=machine1_id, epoch=self.epoch_snapshot, reason="test"
+            )
+        except ApiError as e:
+            self.lg("-expected error raised %s" % e.message)
+            self.assertEqual(e.message, "403 Forbidden")
+        self.lg("delete snapshot")
         try:
-            self.user2_api.cloudbroker.machine.reboot(machineId=machine1_id,reason="test")
-            self.user2_api.cloudbroker.machine.deleteSnapshot(machineId=machine1_id,epoch=self.epoch_snapshot,reason="test")
+            self.user2_api.cloudbroker.machine.reboot(
+                machineId=machine1_id, reason="test"
+            )
+            self.user2_api.cloudbroker.machine.deleteSnapshot(
+                machineId=machine1_id, epoch=self.epoch_snapshot, reason="test"
+            )
 
-        except ApiError as e :
-            self.lg('-expected error raised %s' % e.message)
-            self.assertEqual(e.message,'403 Forbidden')
+        except ApiError as e:
+            self.lg("-expected error raised %s" % e.message)
+            self.assertEqual(e.message, "403 Forbidden")
 
-        self.lg('checkvms ')
+        self.lg("checkvms ")
         """
         try:
             response = self.user1_api.cloudbroker.diagnostics.checkVms() ##give unexpectederror

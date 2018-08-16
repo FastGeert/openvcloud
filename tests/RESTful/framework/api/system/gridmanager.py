@@ -1,5 +1,6 @@
 from framework.api import utils
 
+
 class GridManager:
     def __init__(self, api_client):
         self._api = api_client
@@ -27,13 +28,8 @@ class GridManager:
 
     def getStatImage(self, statKey, width, height):
         return self._api.system.gridmanager.getStatImage(
-            statKey=statKey,
-            width=width,
-            height=height
+            statKey=statKey, width=width, height=height
         )
 
     def getVDisks(self, **kwargs):
         return self._api.system.gridmanager.getVDisks(**kwargs)
-
-    
-

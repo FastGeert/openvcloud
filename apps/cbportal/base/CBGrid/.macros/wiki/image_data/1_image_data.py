@@ -1,6 +1,6 @@
 def main(j, args, params, tags, tasklet):
     params.result = (args.doc, args.doc)
-    imageid = args.requestContext.params.get('id')
+    imageid = args.requestContext.params.get("id")
     if not imageid:
         args.doc.applyTemplate({})
         return params
@@ -10,17 +10,17 @@ def main(j, args, params, tags, tasklet):
         args.doc.applyTemplate({})
         return params
 
-    ccl = j.clients.osis.getNamespace('cloudbroker')
+    ccl = j.clients.osis.getNamespace("cloudbroker")
 
     if not ccl.image.exists(imageid):
-        args.doc.applyTemplate({'imageid': None}, True)
+        args.doc.applyTemplate({"imageid": None}, True)
         return params
 
     imageobj = ccl.image.get(imageid)
     image = imageobj.dump()
     if imageobj.accountId:
-        query = {'$fields': ['id', 'name'], '$query': {'id': imageobj.accountId}}
-        image['account'] = ccl.account.searchOne(query)
+        query = {"$fields": ["id", "name"], "$query": {"id": imageobj.accountId}}
+        image["account"] = ccl.account.searchOne(query)
 
     args.doc.applyTemplate(image, True)
 

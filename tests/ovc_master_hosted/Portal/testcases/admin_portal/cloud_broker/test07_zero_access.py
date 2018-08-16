@@ -2,12 +2,13 @@ import unittest
 from nose_parameterized import parameterized
 from tests.ovc_master_hosted.Portal.framework.framework import Framework
 
+
 class ZeroAccessTests(Framework):
     def setUp(self):
         super(ZeroAccessTests, self).setUp()
         self.Login.Login(cookies_login=True)
-        self.navigation_bar = 'navigation bar'
-        self.lg('go to zero access page')
+        self.navigation_bar = "navigation bar"
+        self.lg("go to zero access page")
         self.ZeroAccess.get_it()
         self.assertTrue(self.ZeroAccess.is_at())
 
@@ -23,11 +24,13 @@ class ZeroAccessTests(Framework):
         #. check page title
         #. check 'show records per page' list
         """
-        self.lg('check page url & title')
-        self.assertEqual(self.driver.title, 'CBGrid - 0-access')
-        self.assertIn('cbgrid/0-access', self.driver.current_url)
-        self.lg('check navigation bar')
-        self.assertEqual(self.get_navigation_bar(self.navigation_bar), ['Cloud Broker', '0-access'])
+        self.lg("check page url & title")
+        self.assertEqual(self.driver.title, "CBGrid - 0-access")
+        self.assertIn("cbgrid/0-access", self.driver.current_url)
+        self.lg("check navigation bar")
+        self.assertEqual(
+            self.get_navigation_bar(self.navigation_bar), ["Cloud Broker", "0-access"]
+        )
 
     def test02_zero_access_nodes_table_paging(self):
         """
@@ -38,10 +41,12 @@ class ZeroAccessTests(Framework):
         #. go to zero access page.
         #. try paging from the available page numbers and verify it should succeed.
         """
-        self.lg('%s STARTED' % self._testID)
-        self.lg('try paging from the available page numbers and verify it should succeed')
-        self.assertTrue(self.Tables.check_show_list('zero_access_nodes'))
-        self.lg('%s ENDED' % self._testID)
+        self.lg("%s STARTED" % self._testID)
+        self.lg(
+            "try paging from the available page numbers and verify it should succeed"
+        )
+        self.assertTrue(self.Tables.check_show_list("zero_access_nodes"))
+        self.lg("%s ENDED" % self._testID)
 
     def test03_zero_access_nodes_table_paging_buttons(self):
         """
@@ -52,10 +57,10 @@ class ZeroAccessTests(Framework):
         #. go to zero access page.
         #. try paging from start/previous/next/last and verify it should succeed.
         """
-        self.lg('%s STARTED' % self._testID)
-        self.lg('try paging from start/previous/next/last and verify it should succeed')
-        self.assertTrue(self.Tables.check_next_previous_buttons('zero_access_nodes'))
-        self.lg('%s ENDED' % self._testID)
+        self.lg("%s STARTED" % self._testID)
+        self.lg("try paging from start/previous/next/last and verify it should succeed")
+        self.assertTrue(self.Tables.check_next_previous_buttons("zero_access_nodes"))
+        self.lg("%s ENDED" % self._testID)
 
     def test04_zero_access_sessions_table_paging(self):
         """
@@ -66,10 +71,12 @@ class ZeroAccessTests(Framework):
         #. go to zero access page.
         #. try paging from the available page numbers and verify it should succeed.
         """
-        self.lg('%s STARTED' % self._testID)
-        self.lg('try paging from the available page numbers and verify it should succeed')
-        self.assertTrue(self.Tables.check_show_list('zero_access_sessions'))
-        self.lg('%s ENDED' % self._testID)
+        self.lg("%s STARTED" % self._testID)
+        self.lg(
+            "try paging from the available page numbers and verify it should succeed"
+        )
+        self.assertTrue(self.Tables.check_show_list("zero_access_sessions"))
+        self.lg("%s ENDED" % self._testID)
 
     def test05_zero_access_sessions_table_paging_buttons(self):
         """
@@ -80,7 +87,7 @@ class ZeroAccessTests(Framework):
         #. go to storage routers page.
         #. try paging from start/previous/next/last and verify it should succeed.
         """
-        self.lg('%s STARTED' % self._testID)
-        self.lg('try paging from start/previous/next/last and verify it should succeed')
-        self.assertTrue(self.Tables.check_next_previous_buttons('zero_access_sessions'))
-        self.lg('%s ENDED' % self._testID)
+        self.lg("%s STARTED" % self._testID)
+        self.lg("try paging from start/previous/next/last and verify it should succeed")
+        self.assertTrue(self.Tables.check_next_previous_buttons("zero_access_sessions"))
+        self.lg("%s ENDED" % self._testID)

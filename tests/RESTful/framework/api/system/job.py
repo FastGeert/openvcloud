@@ -1,7 +1,8 @@
 from framework.api import utils
 
+
 class Job:
-    def __init__(self,api_client):
+    def __init__(self, api_client):
         self._api = api_client
 
     def purge(self, age):

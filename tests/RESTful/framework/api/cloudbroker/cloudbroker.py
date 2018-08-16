@@ -10,8 +10,8 @@ from framework.api.cloudbroker.ovsnode import OVSNode
 from framework.api.cloudbroker.qos import Qos
 from framework.api.cloudbroker.user import User
 
-class Cloudbroker:
 
+class Cloudbroker:
     def __init__(self, api_client):
         self.account = Account(api_client)
         self.cloudspace = Cloudspace(api_client)

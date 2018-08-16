@@ -1,13 +1,12 @@
 import time
 
-class AtYourService():
 
+class AtYourService:
     def __init__(self, framework):
         self.framework = framework
 
 
-
-class CloudBroker():
+class CloudBroker:
     def __init__(self, framework):
         self.framework = framework
 
@@ -21,7 +20,7 @@ class CloudBroker():
         self.framework.open_base_page("cloud_broker", "cloudbroker_sub_locations")
 
     def Stacks(self):
-        self.framework.open_base_page("cloud_broker","cloudbroker_sub_stacks")
+        self.framework.open_base_page("cloud_broker", "cloudbroker_sub_stacks")
 
     def Images(self):
         self.framework.open_base_page("cloud_broker", "cloudbroker_sub_images")
@@ -33,60 +32,53 @@ class CloudBroker():
         self.framework.open_base_page("cloud_broker", "cloudbroker_sub_users")
 
     def Groups(self):
-        self.framework.open_base_page("cloud_broker","cloudbroker_sub_groups")
+        self.framework.open_base_page("cloud_broker", "cloudbroker_sub_groups")
 
     def VirtualMachines(self):
-        self.framework.open_base_page("cloud_broker","cloudbroker_sub_vm")
+        self.framework.open_base_page("cloud_broker", "cloudbroker_sub_vm")
 
     def PhysicalNodes(self):
-        self.framework.open_base_page("cloud_broker","cloudbroker_sub_physical_nodes")
+        self.framework.open_base_page("cloud_broker", "cloudbroker_sub_physical_nodes")
 
     def ZeroAccess(self):
-        self.framework.open_base_page("cloud_broker","cloudbroker_sub_0_access")
+        self.framework.open_base_page("cloud_broker", "cloudbroker_sub_0_access")
 
     def SoftwareVersions(self):
-        self.framework.open_base_page("cloud_broker","cloudbroker_sub_sv")
+        self.framework.open_base_page("cloud_broker", "cloudbroker_sub_sv")
 
-class Statics():
 
+class Statics:
     def __init__(self, framework):
         self.framework = framework
 
 
-
-class Grid():
-
+class Grid:
     def __init__(self, framework):
         self.framework = framework
 
     def error_conditions(self):
-        self.framework.open_base_page("grid_arrow","error_conditions")
+        self.framework.open_base_page("grid_arrow", "error_conditions")
 
     def status_overview(self):
-        self.framework.open_base_page("grid_arrow","status_overview")
+        self.framework.open_base_page("grid_arrow", "status_overview")
 
-class Storage():
 
+class Storage:
     def __init__(self, framework):
         self.framework = framework
 
 
-
-class Systems():
-
+class Systems:
     def __init__(self, framework):
         self.framework = framework
 
 
-
-class EndUser():
-
+class EndUser:
     def __init__(self, framework):
         self.framework = framework
 
 
-
-class leftNavigationMenu():
+class leftNavigationMenu:
     def __init__(self, framework):
         self.framework = framework
 
@@ -98,21 +90,25 @@ class leftNavigationMenu():
         self.Systems = Systems(self.framework)
         self.EndUser = EndUser(self.framework)
 
-    def compare_original_list_with_exist_list(self, menu_click, menu_element, original_list):
+    def compare_original_list_with_exist_list(
+        self, menu_click, menu_element, original_list
+    ):
         self.framework.check_side_list()
         if menu_click != "":
             self.framework.click(menu_click)
         exist_menu = self.framework.get_list_items_text(menu_element)
         for item in original_list:
             if not item in exist_menu:
-                self.framework.fail("This %s list item isn't exist in %s" % (item, exist_menu))
+                self.framework.fail(
+                    "This %s list item isn't exist in %s" % (item, exist_menu)
+                )
 
     def check_redirect_page(self, clickable_item, check_value):
 
-        if clickable_item in ['system_sub_users','system_sub_sm', 'system_sub_api']:
+        if clickable_item in ["system_sub_users", "system_sub_sm", "system_sub_api"]:
             time.sleep(10)
         self.framework.check_side_list()
         self.framework.click(clickable_item)
-        if self.framework.browser == 'firefox':
+        if self.framework.browser == "firefox":
             time.sleep(2)
         self.framework.assertTrue(self.framework.element_in_url(check_value))

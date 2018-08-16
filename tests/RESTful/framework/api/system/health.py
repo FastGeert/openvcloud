@@ -1,4 +1,5 @@
-from framework.api import  utils
+from framework.api import utils
+
 
 class Health:
     def __init__(self, api_client):
@@ -18,4 +19,3 @@ class Health:
 
     def run(self, nid):
         return self._api.system.health.run(nid=nid)
-

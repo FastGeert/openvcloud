@@ -8,8 +8,8 @@ import imaplib
 import mailbox
 import json
 
-class UsersBasicTests(BasicACLTest):
 
+class UsersBasicTests(BasicACLTest):
     def setUp(self):
         super(UsersBasicTests, self).setUp()
         self.acl_setup(create_default_cloudspace=False)
@@ -24,14 +24,16 @@ class UsersBasicTests(BasicACLTest):
         #. Authenticate U1,should return session key[user1_key] .
         #. Use U1's key to list the accounts for U1, should succeed.
         """
-        self.lg('%s STARTED' % self._testID)
+        self.lg("%s STARTED" % self._testID)
 
-        self.lg('- Create user1 with admin access ')
-        old_password = str(uuid.uuid4()).replace('-', '')[0:10]
-        user1 = self.cloudbroker_user_create(group='admin', password=old_password)
+        self.lg("- Create user1 with admin access ")
+        old_password = str(uuid.uuid4()).replace("-", "")[0:10]
+        user1 = self.cloudbroker_user_create(group="admin", password=old_password)
 
         self.lg("- Authenticate U1 ,should return session key[user1_key] .")
-        user1_key = self.get_authenticated_user_api(username=user1, password=old_password)
+        user1_key = self.get_authenticated_user_api(
+            username=user1, password=old_password
+        )
         self.assertTrue(user1_key)
 
         self.lg("-  Use U1's key to list the accounts for U1, should succeed.")
@@ -51,10 +53,10 @@ class UsersBasicTests(BasicACLTest):
         #. Check that this data has been added to U1 info ,should succeed.
 
         """
-        self.lg('%s STARTED' % self._testID)
-        self.lg('- Create user (U1) with admin access and Email ')
-        user1 = self.cloudbroker_user_create(group='admin')
-        user1_email = "%s@example.com"%user1
+        self.lg("%s STARTED" % self._testID)
+        self.lg("- Create user (U1) with admin access and Email ")
+        user1 = self.cloudbroker_user_create(group="admin")
+        user1_email = "%s@example.com" % user1
 
         self.lg("- Authenticate U1 ,sould succeed .")
         user1_key = self.get_authenticated_user_api(user1)
@@ -65,11 +67,11 @@ class UsersBasicTests(BasicACLTest):
         self.assertIn(user1_email, response["emailaddresses"])
 
         self.lg("- Set data for U1 with /cloudapi/users/setData API, Should succeed.")
-        data = {"key":"value"}
+        data = {"key": "value"}
         response = user1_key.cloudapi.users.setData(data=json.dumps(data))
         self.assertTrue(response)
 
-        self.lg(' Check that this data has been added to U1 info ,should succeed.')
+        self.lg(" Check that this data has been added to U1 info ,should succeed.")
         response = user1_key.cloudapi.users.get(username=user1)
         self.assertDictEqual(data, response["data"])
 
@@ -85,10 +87,10 @@ class UsersBasicTests(BasicACLTest):
         #. Check that userr1 ,user2   in matching list, should succeed.
         #. Delete user1 and user2 and make sure that they can't be listed.
         """
-        self.lg('%s STARTED' % self._testID)
+        self.lg("%s STARTED" % self._testID)
 
-        self.lg('- Create user1 with random name . ')
-        user1_name = str(uuid.uuid4()).replace('-', '')[0:10]
+        self.lg("- Create user1 with random name . ")
+        user1_name = str(uuid.uuid4()).replace("-", "")[0:10]
         self.cloudbroker_user_create(username=user1_name)
 
         self.lg("- Authenticate U1 ,sould succeed .")
@@ -96,27 +98,41 @@ class UsersBasicTests(BasicACLTest):
         self.assertTrue(user1_key)
 
         self.lg("- Create user2 with name in which user1 name is part of it")
-        user2_name = "match%s"%user1_name
+        user2_name = "match%s" % user1_name
         self.cloudbroker_user_create(username=user2_name)
 
-        self.lg("- Use user1 name to get matching usernames with /cloudapi/users/getMatchingUsernames Api,sould succeed.")
+        self.lg(
+            "- Use user1 name to get matching usernames with /cloudapi/users/getMatchingUsernames Api,sould succeed."
+        )
         limit = random.randint(3, 20)
-        matching_users_names = self.api.cloudapi.users.getMatchingUsernames(usernameregex=user1_name, limit=limit)
+        matching_users_names = self.api.cloudapi.users.getMatchingUsernames(
+            usernameregex=user1_name, limit=limit
+        )
 
         self.lg("- Check that user2 and user1  in matching list, should succeed.")
-        self.assertTrue([x for x in matching_users_names if x["username"]==user2_name ])
-        self.assertTrue([x for x in matching_users_names if x["username"]==user1_name ])
+        self.assertTrue(
+            [x for x in matching_users_names if x["username"] == user2_name]
+        )
+        self.assertTrue(
+            [x for x in matching_users_names if x["username"] == user1_name]
+        )
 
         self.lg("- Delete user1 and user2 and make sure that they can't be listed.")
         self.api.cloudbroker.user.delete(username=user1_name)
         self.api.cloudbroker.user.delete(username=user2_name)
 
-        self.CLEANUP['username'].remove(user1_name)
-        self.CLEANUP['username'].remove(user2_name)
+        self.CLEANUP["username"].remove(user1_name)
+        self.CLEANUP["username"].remove(user2_name)
 
-        matching_users_names = self.api.cloudapi.users.getMatchingUsernames(usernameregex = user2_name)
-        self.assertFalse([x for x in matching_users_names if x["username"]==user2_name ])
-        self.assertFalse([x for x in matching_users_names if x["username"]==user1_name ])
+        matching_users_names = self.api.cloudapi.users.getMatchingUsernames(
+            usernameregex=user2_name
+        )
+        self.assertFalse(
+            [x for x in matching_users_names if x["username"] == user2_name]
+        )
+        self.assertFalse(
+            [x for x in matching_users_names if x["username"] == user1_name]
+        )
 
     def test005_create_users_with_same_specs(self):
         """ OVC-034
@@ -129,24 +145,34 @@ class UsersBasicTests(BasicACLTest):
         #. Create User3 with same Email as User1 , should fail .
 
         """
-        self.lg('- Create user1 with random name user1. ')
+        self.lg("- Create user1 with random name user1. ")
         user1_name = self.cloudbroker_user_create()
-        user1_emailaddress = "%s@example.com"%user1_name
+        user1_emailaddress = "%s@example.com" % user1_name
 
         self.lg("- Create User2 with same name as user1, should fail")
-        user2_emailaddress = "%s@example.com"%(str(uuid.uuid4()).replace('-', '')[0:10])
+        user2_emailaddress = "%s@example.com" % (
+            str(uuid.uuid4()).replace("-", "")[0:10]
+        )
         with self.assertRaises(HTTPError) as e:
-            self.api.cloudbroker.user.create(username=user1_name, emailaddress=user2_emailaddress,
-                                             password=user1_name, groups=[])
-                                             
-        self.lg('- expected error raised %s' % e.exception.status_code)
+            self.api.cloudbroker.user.create(
+                username=user1_name,
+                emailaddress=user2_emailaddress,
+                password=user1_name,
+                groups=[],
+            )
+
+        self.lg("- expected error raised %s" % e.exception.status_code)
         self.assertEqual(e.exception.status_code, 409)
 
         self.lg("Create User3 with same Email as User1 , should fail . ")
-        user3_name = str(uuid.uuid4()).replace('-', '')[0:10]
+        user3_name = str(uuid.uuid4()).replace("-", "")[0:10]
         with self.assertRaises(HTTPError) as e:
-            self.api.cloudbroker.user.create(username=user3_name, emailaddress=user1_emailaddress,
-                                             password=user3_name, groups=[])
+            self.api.cloudbroker.user.create(
+                username=user3_name,
+                emailaddress=user1_emailaddress,
+                password=user3_name,
+                groups=[],
+            )
 
-        self.lg('- expected error raised %s' % e.exception.status_code)
+        self.lg("- expected error raised %s" % e.exception.status_code)
         self.assertEqual(e.exception.status_code, 409)

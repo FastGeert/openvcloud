@@ -1,7 +1,8 @@
 from framework.api import utils
 
+
 class ContentManager:
-    def __init__(self ,api_client ):
+    def __init__(self, api_client):
         self._api = api_client
 
     def checkEvents(self, cursor):
@@ -21,16 +22,12 @@ class ContentManager:
 
     def modelobjectlist(self, namespace, category, key):
         return self._api.system.contentmanager.modelobjectlist(
-            namespace=namespace,
-            category=category,
-            key=key
+            namespace=namespace, category=category, key=key
         )
 
     def modelobjectupdate(self, appname, actorname, key):
         return self._api.system.contentmanager.modelobjectupdate(
-            appname=appname,
-            actorname=actorname,
-            key=key
+            appname=appname, actorname=actorname, key=key
         )
 
     def notifyActorModification(self, id):
@@ -47,6 +44,3 @@ class ContentManager:
 
     def wikisave(self, cachekey, text):
         return self._api.system.contentmanager.wikisave(cachekey=cachekey, text=text)
-
-    
-    

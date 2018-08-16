@@ -2,6 +2,7 @@ from JumpScale import j
 from JumpScale.portal.portal import exceptions
 import json
 
+
 class cloudbroker_health(object):
     """
     API Check status of grid
@@ -15,13 +16,13 @@ class cloudbroker_health(object):
         resp = {}
         try:
             dbstate = j.core.portal.active.osis.getStatus()
-            resp['mongodb'] = dbstate['mongodb']
-            resp['influxdb'] = dbstate['influxdb']
+            resp["mongodb"] = dbstate["mongodb"]
+            resp["influxdb"] = dbstate["influxdb"]
         except Exception:
-            resp['mongodb'] = False
-            resp['influxdb'] = False
+            resp["mongodb"] = False
+            resp["influxdb"] = False
 
-        resp['healtcheckalive'] = j.core.grid.healthchecker.fetchState() == 'OK'
+        resp["healtcheckalive"] = j.core.grid.healthchecker.fetchState() == "OK"
 
         if all(resp.values()):
             return resp

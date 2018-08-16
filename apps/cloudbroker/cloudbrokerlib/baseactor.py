@@ -10,11 +10,11 @@ class BaseActor(object):
         self.cb = cloudbroker.CloudBroker()
         self.models = cloudbroker.models
         self.sysmodels = cloudbroker.sysmodels
-        if self.__class__.__name__.startswith('cloudapi'):
-            packagename = 'cloudbroker'
-        elif self.__class__.__name__.startswith('cloudbroker'):
-            packagename = 'cbportal'
-        self.hrd = j.atyourservice.get(name=packagename, instance='main').hrd
+        if self.__class__.__name__.startswith("cloudapi"):
+            packagename = "cloudbroker"
+        elif self.__class__.__name__.startswith("cloudbroker"):
+            packagename = "cbportal"
+        self.hrd = j.atyourservice.get(name=packagename, instance="main").hrd
 
 
 def wrap_remote(func):
@@ -22,8 +22,8 @@ def wrap_remote(func):
         try:
             return func(*args, **kwargs)
         except ApiError as e:
-            ctype = e.response.headers.get('Content-Type', 'text/plain')
-            headers = [('Content-Type', ctype), ]
+            ctype = e.response.headers.get("Content-Type", "text/plain")
+            headers = [("Content-Type", ctype)]
             statuscode = e.response.status_code or 500
             raise exceptions.BaseError(statuscode, headers, e.response.content)
 

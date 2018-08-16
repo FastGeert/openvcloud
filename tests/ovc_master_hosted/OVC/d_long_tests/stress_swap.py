@@ -19,19 +19,26 @@ class StressSwap(BasicACLTest):
         print(" [*] self.nodeId : %s " % str(self.nodeId))
 
         print(" [*] Install stress-ng")
-        self.execute_command_on_physical_node('apt-get install -y stress-ng', self.nodeId)
+        self.execute_command_on_physical_node(
+            "apt-get install -y stress-ng", self.nodeId
+        )
         time.sleep(60)
-        self.assertIn('stress-ng', self.execute_command_on_physical_node('which stress-ng', self.nodeId))
+        self.assertIn(
+            "stress-ng",
+            self.execute_command_on_physical_node("which stress-ng", self.nodeId),
+        )
 
         print(" [*] Execute stress-ng --vm-method rowhammer -r 500")
-        self.execute_command_on_physical_node('stress-ng --vm-method rowhammer -r 500&', self.nodeId)
+        self.execute_command_on_physical_node(
+            "stress-ng --vm-method rowhammer -r 500&", self.nodeId
+        )
         print(" [*] Wait for 10 minutes")
         time.sleep(600)
 
         response_data = self.api.system.health.getDetailedStatus(nid=self.nodeId)
         print(" [*] Get health details status")
-        for data in response_data['System Load']['data']:
-            if 'Swap' in data['msg']:
+        for data in response_data["System Load"]["data"]:
+            if "Swap" in data["msg"]:
                 self.assertEqual("ERROR", data["status"])
                 break
         else:
@@ -39,7 +46,7 @@ class StressSwap(BasicACLTest):
 
     def tearDown(self):
         try:
-            self.execute_command_on_physical_node('pkill -9 stress-ng', self.nodeId)
+            self.execute_command_on_physical_node("pkill -9 stress-ng", self.nodeId)
         except:
             # " There is no thing to do, cause this test case may damage the node"
             pass

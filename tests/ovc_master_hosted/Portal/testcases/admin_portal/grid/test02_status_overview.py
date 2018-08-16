@@ -1,5 +1,6 @@
 from tests.ovc_master_hosted.Portal.framework.framework import Framework
 
+
 class StatusTests(Framework):
     def setUp(self):
         super(StatusTests, self).setUp()
@@ -16,4 +17,8 @@ class StatusTests(Framework):
         #. verify expected behavior
         """
         health_check = self.StatusOverview.run_health_check()
-        self.assertEqual(health_check, 'Scheduled healthcheck', 'Health check message: %s' % health_check)
+        self.assertEqual(
+            health_check,
+            "Scheduled healthcheck",
+            "Health check message: %s" % health_check,
+        )

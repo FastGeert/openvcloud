@@ -1,43 +1,54 @@
 from JumpScale.portal.docgenerator.popup import Popup
 
+
 def main(j, args, params, tags, tasklet):
     params.result = page = args.page
-    ccl = j.clients.osis.getNamespace('cloudbroker')
-    vcl = j.clients.osis.getNamespace('vfw')
-    cloudspaceId = args.getTag('cloudspaceId')
+    ccl = j.clients.osis.getNamespace("cloudbroker")
+    vcl = j.clients.osis.getNamespace("vfw")
+    cloudspaceId = args.getTag("cloudspaceId")
     cloudspace = ccl.cloudspace.get(int(cloudspaceId))
 
-    if cloudspace.status != 'DEPLOYED':
-        popup = Popup(id='movevfw', header='CloudSpace is not deployed', submit_url='#')
+    if cloudspace.status != "DEPLOYED":
+        popup = Popup(id="movevfw", header="CloudSpace is not deployed", submit_url="#")
         popup.write_html(page)
         return params
 
-
-    popup = Popup(id='movevfw', header='Move Virtual Firewall',
-                  submit_url='/restmachine/cloudbroker/cloudspace/moveVirtualFirewallToFirewallNode',
-                  reload_on_success=False)
+    popup = Popup(
+        id="movevfw",
+        header="Move Virtual Firewall",
+        submit_url="/restmachine/cloudbroker/cloudspace/moveVirtualFirewallToFirewallNode",
+        reload_on_success=False,
+    )
 
     key = "%(gid)s_%(networkId)s" % cloudspace.dump()
     if not vcl.virtualfirewall.exists(key):
-        popup = Popup(id='movevfw', header='CloudSpace is not properly deployed', submit_url='#')
+        popup = Popup(
+            id="movevfw", header="CloudSpace is not properly deployed", submit_url="#"
+        )
         popup.write_html(page)
         return params
 
     vfw = vcl.virtualfirewall.get(key)
-    query = {'status': 'ENABLED', 'gid': cloudspace.gid, 'referenceId': {'$ne': str(vfw.nid)}}
+    query = {
+        "status": "ENABLED",
+        "gid": cloudspace.gid,
+        "referenceId": {"$ne": str(vfw.nid)},
+    }
     vfwnodes = ccl.stack.search(query)[1:]
     if not vfwnodes:
-        popup = Popup(id='movevfw', header='No other Firewall node available', submit_url='#')
+        popup = Popup(
+            id="movevfw", header="No other Firewall node available", submit_url="#"
+        )
         popup.write_html(page)
         return params
 
-    dropnodes = [('Choose Automaticly', 'null')]
+    dropnodes = [("Choose Automaticly", "null")]
     for stack in vfwnodes:
-        dropnodes.append(("FW Node %(name)s" % stack,  stack['referenceId']))
+        dropnodes.append(("FW Node %(name)s" % stack, stack["referenceId"]))
 
-    popup.addDropdown("FW Node to move to", 'targetNid', dropnodes)
-    popup.addHiddenField('cloudspaceId', cloudspaceId)
-    popup.addHiddenField('async', 'true')
+    popup.addDropdown("FW Node to move to", "targetNid", dropnodes)
+    popup.addHiddenField("cloudspaceId", cloudspaceId)
+    popup.addHiddenField("async", "true")
 
     popup.write_html(page)
 

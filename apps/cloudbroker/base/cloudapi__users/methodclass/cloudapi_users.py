@@ -13,10 +13,11 @@ class cloudapi_users(BaseActor):
     User management
 
     """
+
     def __init__(self):
         super(cloudapi_users, self).__init__()
         self.libvirt_actor = j.apps.libcloud.libvirt
-        self.systemodel = j.clients.osis.getNamespace('system')
+        self.systemodel = j.clients.osis.getNamespace("system")
 
     def authenticate(self, username, password, **kwargs):
         """
@@ -27,8 +28,10 @@ class cloudapi_users(BaseActor):
         param:password password to validate
         result str,,session
         """
-        ctx = kwargs['ctx']
-        return j.apps.system.usermanager.authenticate(name=username, secret=password, ctx=ctx)
+        ctx = kwargs["ctx"]
+        return j.apps.system.usermanager.authenticate(
+            name=username, secret=password, ctx=ctx
+        )
 
     def get(self, username, **kwargs):
         """
@@ -36,11 +39,11 @@ class cloudapi_users(BaseActor):
         param:username username of the user
         result:
         """
-        ctx = kwargs['ctx']
-        logedinuser = ctx.env['beaker.session']['user']
+        ctx = kwargs["ctx"]
+        logedinuser = ctx.env["beaker.session"]["user"]
         if logedinuser != username:
-            ctx.start_response('403 Forbidden', [])
-            return 'Forbidden'
+            ctx.start_response("403 Forbidden", [])
+            return "Forbidden"
 
         user = j.core.portal.active.auth.getUserInfo(username)
         if user:
@@ -48,11 +51,10 @@ class cloudapi_users(BaseActor):
                 data = json.loads(user.data)
             except:
                 data = {}
-            return {'username':user.id, 'emailaddresses': user.emails, 'data': data}
+            return {"username": user.id, "emailaddresses": user.emails, "data": data}
         else:
-            ctx.start_response('404 Not Found', [])
-            return 'User not found'
-
+            ctx.start_response("404 Not Found", [])
+            return "User not found"
 
     def setData(self, data, **kwargs):
         """
@@ -60,11 +62,11 @@ class cloudapi_users(BaseActor):
         param:username username of the user
         result:
         """
-        ctx = kwargs['ctx']
-        username = ctx.env['beaker.session']['user']
-        if username == 'guest':
-            ctx.start_response('403 Forbidden', [])
-            return 'Forbidden'
+        ctx = kwargs["ctx"]
+        username = ctx.env["beaker.session"]["user"]
+        if username == "guest":
+            ctx.start_response("403 Forbidden", [])
+            return "Forbidden"
 
         if not isinstance(data, dict):
             try:
@@ -83,8 +85,8 @@ class cloudapi_users(BaseActor):
             self.systemodel.user.set(user)
             return True
         else:
-            ctx.start_response('404 Not Found', [])
-            return 'User not found'
+            ctx.start_response("404 Not Found", [])
+            return "User not found"
 
     def getMatchingUsernames(self, usernameregex, limit=5, **kwargs):
         """
@@ -95,21 +97,30 @@ class cloudapi_users(BaseActor):
         :return: list of dicts with the username and url of the gravatar of the user
         """
         if limit > 20:
-            raise exceptions.BadRequest('Cannot return more than 20 usernames while matching users')
+            raise exceptions.BadRequest(
+                "Cannot return more than 20 usernames while matching users"
+            )
 
-        matchingusers = self.systemodel.user.search({'id': {'$regex': usernameregex}},
-                                                    size=limit)[1:]
+        matchingusers = self.systemodel.user.search(
+            {"id": {"$regex": usernameregex}}, size=limit
+        )[1:]
 
         if matchingusers:
+
             def userinfo(user):
-                emailhash = j.tools.hash.md5_string(next(iter(user['emails']), ''))
-                return {'username': user['id'],
-                        'gravatarurl': 'http://www.gravatar.com/avatar/%s' % emailhash }
+                emailhash = j.tools.hash.md5_string(next(iter(user["emails"]), ""))
+                return {
+                    "username": user["id"],
+                    "gravatarurl": "http://www.gravatar.com/avatar/%s" % emailhash,
+                }
+
             return map(userinfo, matchingusers)
         else:
             return []
 
-    def sendInviteLink(self, emailaddress, resourcetype, resourceid, accesstype, **kwargs):
+    def sendInviteLink(
+        self, emailaddress, resourcetype, resourceid, accesstype, **kwargs
+    ):
         """
         Send an invitation for a link to share a vmachine, cloudspace, account management
         inviting a new user to register and access them
@@ -122,28 +133,42 @@ class cloudapi_users(BaseActor):
         :return True if email was was successfully sent
         """
 
-        if not re.search('^[\w.+-]+@[\w.-]+\.[a-zA-Z]{2,}$', emailaddress):
-            raise exceptions.PreconditionFailed('Specified email address is in an invalid format')
+        if not re.search("^[\w.+-]+@[\w.-]+\.[a-zA-Z]{2,}$", emailaddress):
+            raise exceptions.PreconditionFailed(
+                "Specified email address is in an invalid format"
+            )
 
-        existinginvitationtoken = self.models.inviteusertoken.search({'email': emailaddress})[1:]
+        existinginvitationtoken = self.models.inviteusertoken.search(
+            {"email": emailaddress}
+        )[1:]
 
         if existinginvitationtoken:
             # Resend the same token in a new email for the newly shared resource
-            invitationtoken = self.models.inviteusertoken.get(existinginvitationtoken[0]['id'])
+            invitationtoken = self.models.inviteusertoken.get(
+                existinginvitationtoken[0]["id"]
+            )
         else:
             # genrerate a new token
-            generatedtoken = ''.join(random.choice(string.ascii_lowercase + string.digits)
-                                     for _ in xrange(64))
+            generatedtoken = "".join(
+                random.choice(string.ascii_lowercase + string.digits)
+                for _ in xrange(64)
+            )
             invitationtoken = self.models.inviteusertoken.new()
             invitationtoken.id = generatedtoken
             invitationtoken.email = emailaddress
 
         invitationtoken.lastInvitationTime = int(time.time())
         self.models.inviteusertoken.set(invitationtoken)
-        templatename = 'invite_external_users'
-        extratemplateargs = {'invitationtoken': invitationtoken.id}
-        return self._sendShareEmail(emailaddress, resourcetype, resourceid, accesstype,
-                                    templatename, extratemplateargs)
+        templatename = "invite_external_users"
+        extratemplateargs = {"invitationtoken": invitationtoken.id}
+        return self._sendShareEmail(
+            emailaddress,
+            resourcetype,
+            resourceid,
+            accesstype,
+            templatename,
+            extratemplateargs,
+        )
 
     def sendShareResourceEmail(self, user, resourcetype, resourceid, accesstype):
         """
@@ -158,14 +183,14 @@ class cloudapi_users(BaseActor):
         :return True if email was successfully sent
         """
         sendAccessEmails = True
-        if resourcetype.lower() == 'account':
+        if resourcetype.lower() == "account":
             account = self.models.account.get(resourceid)
             sendAccessEmails = account.sendAccessEmails
-        elif resourcetype.lower() == 'cloudspace':
+        elif resourcetype.lower() == "cloudspace":
             cloudspace = self.models.cloudspace.get(resourceid)
             account = self.models.account.get(cloudspace.accountId)
             sendAccessEmails = account.sendAccessEmails
-        elif resourcetype.lower() == 'machine':
+        elif resourcetype.lower() == "machine":
             machine = self.models.vmachine.get(resourceid)
             cloudspace = self.models.cloudspace.get(machine.cloudspaceId)
             account = self.models.account.get(cloudspace.accountId)
@@ -173,15 +198,28 @@ class cloudapi_users(BaseActor):
 
         if not sendAccessEmails:
             return False
-        templatename = 'invite_internal_users'
-        extratemplateargs = {'username': user['id'], 'activated': user['active']}
-        if user['emails']:
-            return self._sendShareEmail(user['emails'][0], resourcetype, resourceid, accesstype,
-                                        templatename, extratemplateargs)
+        templatename = "invite_internal_users"
+        extratemplateargs = {"username": user["id"], "activated": user["active"]}
+        if user["emails"]:
+            return self._sendShareEmail(
+                user["emails"][0],
+                resourcetype,
+                resourceid,
+                accesstype,
+                templatename,
+                extratemplateargs,
+            )
         return True
 
-    def _sendShareEmail(self, emailaddress, resourcetype, resourceid, accesstype, templatename,
-                        extratemplateargs=None):
+    def _sendShareEmail(
+        self,
+        emailaddress,
+        resourcetype,
+        resourceid,
+        accesstype,
+        templatename,
+        extratemplateargs=None,
+    ):
         """
 
         :param emailaddress: emailaddress of the registered user
@@ -195,46 +233,49 @@ class cloudapi_users(BaseActor):
         :return: True if email was was successfully sent
         """
         # Build up message subject, body and send it
-        fromaddr = self.hrd.get('instance.openvcloud.supportemail')
+        fromaddr = self.hrd.get("instance.openvcloud.supportemail")
         toaddrs = [emailaddress]
 
-        if resourcetype.lower() == 'account':
+        if resourcetype.lower() == "account":
             accountobj = self.models.account.get(resourceid)
             resourcename = accountobj.name
-        elif resourcetype.lower() == 'cloudspace':
+        elif resourcetype.lower() == "cloudspace":
             cloudspaceobj = self.models.cloudspace.get(resourceid)
             resourcename = cloudspaceobj.name
-        elif resourcetype.lower() == 'machine':
+        elif resourcetype.lower() == "machine":
             machineobj = self.models.vmachine.get(resourceid)
             resourcename = machineobj.name
 
-        if set(accesstype) == set('ARCXDU'):
-            accessrole = 'Admin'
-        elif set(accesstype) == set('RCX'):
-            accessrole = 'Write'
-        elif set(accesstype) == set('R'):
-            accessrole = 'Read'
+        if set(accesstype) == set("ARCXDU"):
+            accessrole = "Admin"
+        elif set(accesstype) == set("RCX"):
+            accessrole = "Write"
+        elif set(accesstype) == set("R"):
+            accessrole = "Read"
         else:
-            raise exceptions.PreconditionFailed('Unidentified access rights (%s) have been set.' %
-                                                accesstype)
+            raise exceptions.PreconditionFailed(
+                "Unidentified access rights (%s) have been set." % accesstype
+            )
 
         args = {
-            'email': emailaddress,
-            'resourcetype': resourcetype,
-            'resourcename': resourcename,
-            'resourceid': resourceid,
-            'accessrole': accessrole,
-            'portalurl': j.apps.cloudapi.locations.getUrl(),
-            'emailaddress': emailaddress
+            "email": emailaddress,
+            "resourcetype": resourcetype,
+            "resourcename": resourcename,
+            "resourceid": resourceid,
+            "accessrole": accessrole,
+            "portalurl": j.apps.cloudapi.locations.getUrl(),
+            "emailaddress": emailaddress,
         }
 
         if extratemplateargs:
             args.update(extratemplateargs)
 
         subject = j.core.portal.active.templates.render(
-                'cloudbroker/email/users/%s.subject.txt' % templatename, **args)
+            "cloudbroker/email/users/%s.subject.txt" % templatename, **args
+        )
         body = j.core.portal.active.templates.render(
-                'cloudbroker/email/users/%s.html' % templatename, **args)
+            "cloudbroker/email/users/%s.html" % templatename, **args
+        )
 
         j.clients.email.send(toaddrs, fromaddr, subject, body)
 
@@ -249,11 +290,11 @@ class cloudapi_users(BaseActor):
         :return: True if token and emailaddress are valid, otherwise False
         """
         if not self.models.inviteusertoken.exists(inviteusertoken):
-            raise exceptions.BadRequest('Invalid invitation token.')
+            raise exceptions.BadRequest("Invalid invitation token.")
 
         inviteusertokenobj = self.models.inviteusertoken.get(inviteusertoken)
         if inviteusertokenobj.email != emailaddress:
             # Email address of user isn't the same as the address the user was invited with
-            raise exceptions.BadRequest('Invalid invitation token.')
+            raise exceptions.BadRequest("Invalid invitation token.")
 
         return True

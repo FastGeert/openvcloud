@@ -9,37 +9,27 @@ def main(j, args, params, tags, tasklet):
             val = int(val)
         filters[tag] = val
 
-
     def makeNS(row, field):
-        return str(', '.join(row[field]))
+        return str(", ".join(row[field]))
 
     fields = [
-        {'name': 'GID',
-         'id': 'gid',
-         'value': '[%(gid)s|/CBGrid/grid?gid=%(gid)s]',
+        {"name": "GID", "id": "gid", "value": "[%(gid)s|/CBGrid/grid?gid=%(gid)s]"},
+        {
+            "name": "id",
+            "id": "id",
+            "value": "[%(id)s|/CBGrid/private network?id=%(id)s&gid=%(gid)s] (%(id)04x)",
         },
-        {'name': 'id',
-         'id': 'id',
-         'value': '[%(id)s|/CBGrid/private network?id=%(id)s&gid=%(gid)s] (%(id)04x)',
+        {
+            "name": "Cloud Space ID",
+            "id": "domain",
+            "value": "[%(domain)s|/CBGrid/cloud space?id=%(domain)s]",
         },
-        {'name': 'Cloud Space ID',
-         'id': 'domain',
-         'value': '[%(domain)s|/CBGrid/cloud space?id=%(domain)s]',
-        },
-        {'name': 'Public IPs',
-         'id': 'pubips',
-         'value': makeNS,
-         'type': 'text'
-        },
-        {'name': 'Management IP',
-         'id': 'host',
-         'value': 'host',
-         'type': 'text'
-        },
+        {"name": "Public IPs", "id": "pubips", "value": makeNS, "type": "text"},
+        {"name": "Management IP", "id": "host", "value": "host", "type": "text"},
     ]
-    tableid = modifier.addTableFromModel('vfw', 'virtualfirewall', fields, filters)
-    modifier.addSearchOptions('#%s' % tableid)
-    modifier.addSorting('#%s' % tableid, 1, 'desc')
+    tableid = modifier.addTableFromModel("vfw", "virtualfirewall", fields, filters)
+    modifier.addSearchOptions("#%s" % tableid)
+    modifier.addSorting("#%s" % tableid, 1, "desc")
 
     params.result = page
 

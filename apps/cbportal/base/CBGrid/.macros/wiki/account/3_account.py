@@ -13,23 +13,23 @@ def generateUsersList(sclient, accountdict):
     :return: list of users have access to account
     """
     users = list()
-    for acl in accountdict['acl']:
-        if acl['type'] == 'U':
-            eusers = sclient.user.simpleSearch({'id': acl['userGroupId']})
+    for acl in accountdict["acl"]:
+        if acl["type"] == "U":
+            eusers = sclient.user.simpleSearch({"id": acl["userGroupId"]})
             if eusers:
                 user = eusers[0]
-                user['userstatus'] = acl['status']
-            elif acl['status'] == 'INVITED':
+                user["userstatus"] = acl["status"]
+            elif acl["status"] == "INVITED":
                 user = dict()
-                user['id'] = acl['userGroupId']
-                user['emails'] = [acl['userGroupId']]
-                user['userstatus'] = acl['status']
+                user["id"] = acl["userGroupId"]
+                user["emails"] = [acl["userGroupId"]]
+                user["userstatus"] = acl["status"]
             else:
                 user = dict()
-                user['id'] = acl['userGroupId']
-                user['emails'] = ['N/A']
-                user['userstatus'] = 'N/A'
-            user['acl'] = acl['right']
+                user["id"] = acl["userGroupId"]
+                user["emails"] = ["N/A"]
+                user["userstatus"] = "N/A"
+            user["acl"] = acl["right"]
             users.append(user)
     return users
 
@@ -37,7 +37,7 @@ def generateUsersList(sclient, accountdict):
 def main(j, args, params, tags, tasklet):
 
     params.result = (args.doc, args.doc)
-    id = args.requestContext.params.get('id')
+    id = args.requestContext.params.get("id")
     try:
         id = int(id)
     except:
@@ -46,22 +46,23 @@ def main(j, args, params, tags, tasklet):
         args.doc.applyTemplate({})
         return params
 
-    cbclient = j.clients.osis.getNamespace('cloudbroker')
-    sclient = j.clients.osis.getNamespace('system')
+    cbclient = j.clients.osis.getNamespace("cloudbroker")
+    sclient = j.clients.osis.getNamespace("system")
 
     if not cbclient.account.exists(id):
-        args.doc.applyTemplate({'id': None}, False)
+        args.doc.applyTemplate({"id": None}, False)
         return params
 
     accountobj = cbclient.account.get(id)
     accountdict = accountobj.dump()
 
-    accountdict['users'] = generateUsersList(sclient, accountdict)
+    accountdict["users"] = generateUsersList(sclient, accountdict)
     j.apps.cloudbroker.account.cb.fillResourceLimits(accountobj.resourceLimits)
-    accountdict['reslimits'] = accountobj.resourceLimits
+    accountdict["reslimits"] = accountobj.resourceLimits
 
     args.doc.applyTemplate(accountdict, False)
     return params
+
 
 def match(j, args, params, tags, tasklet):
     return True

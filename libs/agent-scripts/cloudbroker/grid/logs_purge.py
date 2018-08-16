@@ -10,8 +10,9 @@ organization = "cloudscalers"
 author = "zains@codescalers.com"
 license = "bsd"
 version = "1.0"
-roles = ['master']
+roles = ["master"]
 queue = "io"
+
 
 def action(age, gid=None):
     try:
@@ -19,9 +20,10 @@ def action(age, gid=None):
     except Exception:
         return False
     import JumpScale.grid.osis
-    syscl = j.clients.osis.getNamespace('system')
-    query = {'epoch':{'$lt':start}}
+
+    syscl = j.clients.osis.getNamespace("system")
+    query = {"epoch": {"$lt": start}}
     if gid:
-        query['gid'] = int(gid)
+        query["gid"] = int(gid)
     result = syscl.log.deleteSearch(query)
     return result

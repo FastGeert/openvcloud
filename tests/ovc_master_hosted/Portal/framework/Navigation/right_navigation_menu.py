@@ -1,4 +1,4 @@
-class machines():
+class machines:
     def __init__(self, framework):
         self.framework = framework
 
@@ -16,6 +16,7 @@ class machines():
     def port_forward(self):
         pass
 
+
 class defence_shield:
     def __init__(self, framework):
         self.framework = framework
@@ -24,10 +25,8 @@ class defence_shield:
         pass
 
 
-class rightNavigationMenu():
+class rightNavigationMenu:
     def __init__(self, framework):
         self.framework = framework
         self.Machines = machines(self.framework)
         self.DefenceShield = defence_shield(self.framework)
-
-

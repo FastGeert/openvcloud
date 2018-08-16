@@ -3,7 +3,8 @@ from psutil import virtual_memory
 
 # for thin provisioning
 TOTAL_MEM = int(virtual_memory().total >> 30)
-DELETE_RETENTION_PERIOD = 3600 * 24 * 7 # one week
+DELETE_RETENTION_PERIOD = 3600 * 24 * 7  # one week
+
 
 def get_reserved_memory_default(total_mem):
     if total_mem <= 64:
@@ -13,14 +14,16 @@ def get_reserved_memory_default(total_mem):
     else:
         return 4096  # 4 GB
 
+
 RESERVED_MEM = get_reserved_memory_default(TOTAL_MEM)
+
 
 class GridConfig(object):
     def __init__(self, grid=None, total_mem=int(virtual_memory().total >> 30)):
         self._scl = None
         self.default = {
             "reserved_mem": get_reserved_memory_default(total_mem),
-            "delete_retention_period": DELETE_RETENTION_PERIOD
+            "delete_retention_period": DELETE_RETENTION_PERIOD,
         }
         if grid is None:
             self.gid = j.application.whoAmI.gid
@@ -33,7 +36,7 @@ class GridConfig(object):
     @property
     def scl(self):
         if self._scl is None:
-            self._scl = j.clients.osis.getNamespace('system')
+            self._scl = j.clients.osis.getNamespace("system")
         return self._scl
 
     def refresh_settings(self):
@@ -42,7 +45,9 @@ class GridConfig(object):
 
     def set(self, key, value):
         self.settings[key] = value
-        return self.scl.grid.updateSearch({"guid": self.gid}, {"$set": {"settings.%s" % key: value}})
+        return self.scl.grid.updateSearch(
+            {"guid": self.gid}, {"$set": {"settings.%s" % key: value}}
+        )
 
     def get(self, key, default=None):
         return self.settings.get(key, self.default.get(key, default))

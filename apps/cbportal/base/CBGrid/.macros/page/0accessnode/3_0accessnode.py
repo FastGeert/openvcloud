@@ -14,24 +14,30 @@ var interval = setInterval(function() {
 }
 </script>
     """
-    node_id = args.requestContext.params.get('node')
+    node_id = args.requestContext.params.get("node")
     node_name, remote = j.apps.cloudbroker.zeroaccess._get_node_info(node_id)
     page.addHTML('<h2 class="title">Access info for node: {}</h2>'.format(node_name))
-    oauth = j.clients.oauth.get(instance='itsyouonline')
-    jwt = oauth.get_active_jwt(session=args.requestContext.env['beaker.session'])
+    oauth = j.clients.oauth.get(instance="itsyouonline")
+    jwt = oauth.get_active_jwt(session=args.requestContext.env["beaker.session"])
     if jwt:
-        init_time_data = j.apps.cloudbroker.zeroaccess.getSessionInitTime(ctx=args.requestContext)
+        init_time_data = j.apps.cloudbroker.zeroaccess.getSessionInitTime(
+            ctx=args.requestContext
+        )
         if init_time_data:
-            session_init_time = init_time_data['session_init_time']
+            session_init_time = init_time_data["session_init_time"]
         else:
             session_init_time = 60
         counter = counter % (session_init_time)
-        session_data = j.apps.cloudbroker.zeroaccess.provision(remote=remote, ctx=args.requestContext)
+        session_data = j.apps.cloudbroker.zeroaccess.provision(
+            remote=remote, ctx=args.requestContext
+        )
         if session_data:
-            username=session_data['username']
-            ip=session_data['ssh_ip']
-            port=session_data['ssh_port']
-            link = "chrome-extension://pnhechapfaindjhompbnflcldabbghjo/html/nassh.html#{username}@{ip}:{port}".format(username=username, ip=ip, port=port)
+            username = session_data["username"]
+            ip = session_data["ssh_ip"]
+            port = session_data["ssh_port"]
+            link = "chrome-extension://pnhechapfaindjhompbnflcldabbghjo/html/nassh.html#{username}@{ip}:{port}".format(
+                username=username, ip=ip, port=port
+            )
             accesstext = """
 <h4><span id="counter"></span></h4>
 Two ways to connect to {node}:
@@ -47,15 +53,24 @@ Before using the secure shell plugin integration with 0-access, make sure you lo
 </p>
 
 <h3>2. Via your own terminal:</h3>
-""".format(link=link, node=remote)
+""".format(
+                link=link, node=remote
+            )
             page.addHTML(accesstext)
-            ssh_command = "ssh {username}@{ip} -p {port}".format(username=username, ip=ip, port=port)
-            page.addCodeBlock(ssh_command, template='bash')
+            ssh_command = "ssh {username}@{ip} -p {port}".format(
+                username=username, ip=ip, port=port
+            )
+            page.addCodeBlock(ssh_command, template="bash")
             page.addHTML(counter)
         else:
-            page.addCodeBlock("Can not get provisioning data may be jwt has expired", template='bash')
+            page.addCodeBlock(
+                "Can not get provisioning data may be jwt has expired", template="bash"
+            )
     else:
-        page.addCodeBlock("No jwt found in your session please logout and login again", template='bash')
+        page.addCodeBlock(
+            "No jwt found in your session please logout and login again",
+            template="bash",
+        )
 
     params.result = page
     return params

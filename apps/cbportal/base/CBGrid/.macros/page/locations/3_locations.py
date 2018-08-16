@@ -1,5 +1,3 @@
-
-
 def main(j, args, params, tags, tasklet):
     page = args.page
     modifier = j.html.getPageModifierGridDataTables(page)
@@ -8,16 +6,17 @@ def main(j, args, params, tags, tasklet):
     for tag, val in args.tags.tags.iteritems():
         val = args.getTag(tag)
         if isinstance(val, list):
-            val = ', '.join(val)
+            val = ", ".join(val)
         filters[tag] = val
 
-    fieldnames = ['GID', 'Name', 'Location Code']
+    fieldnames = ["GID", "Name", "Location Code"]
 
-    fieldids = ['gid', 'name', 'locationCode']
-    fieldvalues = ['[%(gid)s|/CBGrid/grid?gid=%(gid)s]', 'name', 'locationCode']
-    tableid = modifier.addTableForModel('cloudbroker', 'location', fieldids, fieldnames,
-                                        fieldvalues, filters)
-    modifier.addSearchOptions('#%s' % tableid)
+    fieldids = ["gid", "name", "locationCode"]
+    fieldvalues = ["[%(gid)s|/CBGrid/grid?gid=%(gid)s]", "name", "locationCode"]
+    tableid = modifier.addTableForModel(
+        "cloudbroker", "location", fieldids, fieldnames, fieldvalues, filters
+    )
+    modifier.addSearchOptions("#%s" % tableid)
 
     params.result = page
 

@@ -20,7 +20,7 @@ def action(name):
     import JumpScale.baselib.remote
 
     host = j.system.platform.lxc.getIp(name)
-    password = j.application.config.get('system.superadmin.passwd')
+    password = j.application.config.get("system.superadmin.passwd")
 
     shorewallclient = j.system.platform.shorewall.get(host, password)
 

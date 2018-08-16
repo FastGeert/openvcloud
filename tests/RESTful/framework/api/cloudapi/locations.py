@@ -1,5 +1,6 @@
 from framework.api import utils
 
+
 class Locations:
     def __init__(self, api_client):
         self._api = api_client

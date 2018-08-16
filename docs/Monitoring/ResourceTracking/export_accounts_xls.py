@@ -7,6 +7,7 @@ from datetime import datetime
 from os import listdir
 from os import environ
 
+
 def main(options):
     now = datetime.utcnow()
     hour = now.hour
@@ -19,30 +20,46 @@ def main(options):
     root_path = environ["DESTINATION_FOLDER"]
     accounts = listdir(root_path)
 
-    book = xlwt.Workbook(encoding='utf-8')
+    book = xlwt.Workbook(encoding="utf-8")
     nosheets = True
     for account in accounts:
         hour = now.hour
-        file_path = os.path.join(root_path, str(account), str(year), str(month), str(day), str(hour), 'account_capnp.bin')
+        file_path = os.path.join(
+            root_path,
+            str(account),
+            str(year),
+            str(month),
+            str(day),
+            str(hour),
+            "account_capnp.bin",
+        )
         while not os.path.exists(file_path) and hour != 0:
             hour -= 1
-            file_path = os.path.join(root_path, str(account), str(year), str(month), str(day), str(hour), 'account_capnp.bin')
+            file_path = os.path.join(
+                root_path,
+                str(account),
+                str(year),
+                str(month),
+                str(day),
+                str(hour),
+                "account_capnp.bin",
+            )
         if not os.path.exists(file_path):
-            print('Skipping %s' % file_path)
+            print("Skipping %s" % file_path)
             continue
         nosheets = False
         sheet = book.add_sheet("account %s" % account)
-        sheet.write(0, 0, 'Cloud Space ID')
-        sheet.write(0, 1, 'Machine Count')
-        sheet.write(0, 2, 'Total Memory')
-        sheet.write(0, 3, 'Total VCPUs')
-        sheet.write(0, 4, 'Disk Size')
-        sheet.write(0, 5, 'Disk IOPS Read')
-        sheet.write(0, 6, 'Disk IOPS Write')
-        sheet.write(0, 7, 'NICs TX')
-        sheet.write(0, 8, 'NICs RX')
+        sheet.write(0, 0, "Cloud Space ID")
+        sheet.write(0, 1, "Machine Count")
+        sheet.write(0, 2, "Total Memory")
+        sheet.write(0, 3, "Total VCPUs")
+        sheet.write(0, 4, "Disk Size")
+        sheet.write(0, 5, "Disk IOPS Read")
+        sheet.write(0, 6, "Disk IOPS Write")
+        sheet.write(0, 7, "NICs TX")
+        sheet.write(0, 8, "NICs RX")
         try:
-            with open(file_path, 'rb') as f:
+            with open(file_path, "rb") as f:
                 account_obj = resources_capnp.Account.read(f)
                 if options.debug:
                     pprint.pprint(account_obj.to_dict())
@@ -79,12 +96,13 @@ def main(options):
             print(e)
 
     if nosheets is False:
-        book.save('example.xls')
+        book.save("example.xls")
     else:
-        print('No data found')
+        print("No data found")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--debug', default=False, action='store_true')
+    parser.add_argument("-d", "--debug", default=False, action="store_true")
     options = parser.parse_args()
     main(options)

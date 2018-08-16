@@ -7,11 +7,12 @@ def main():
     import JumpScale.portal
     from libcloud.compute.providers import get_driver
     from libcloud.compute.types import Provider
-    pcl = j.clients.portal.getByInstance('cloudbroker')
-    ccl = j.clients.osis.getNamespace('cloudbroker')
+
+    pcl = j.clients.portal.getByInstance("cloudbroker")
+    ccl = j.clients.osis.getNamespace("cloudbroker")
     dummy = get_driver(Provider.DUMMY)(1)
     for size in dummy.list_sizes():
-        if not ccl.size.search({'name': size.name})[1:]:
+        if not ccl.size.search({"name": size.name})[1:]:
             cbsize = ccl.size.new()
             cbsize.name = size.name
             cbsize.description = size.name
@@ -23,7 +24,7 @@ def main():
     # add dummy stack
     stack = ccl.stack.new()
     stack.id = 1
-    stack.name = 'dev'
+    stack.name = "dev"
     stack.referenceId = "1"
     stack.type = "DUMMY"
     stack.status = "ENABLED"
@@ -33,13 +34,13 @@ def main():
     # add location
     loc = ccl.location.new()
     loc.gid = j.application.whoAmI.gid
-    loc.name = 'Development'
-    loc.locationCode = 'dev'
-    loc.flag = 'black'
+    loc.name = "Development"
+    loc.locationCode = "dev"
+    loc.flag = "black"
     ccl.location.set(loc)
 
     pcl.actors.libcloud.libvirt.registerNetworkIdRange(1, 200, 300)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

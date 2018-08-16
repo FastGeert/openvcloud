@@ -15,6 +15,7 @@ from framework.api.system.oauth import Oauth
 from framework.api.system.task import Task
 from framework.api.system.usermanager import UserManager
 
+
 class System:
     def __init__(self, api_client):
         self.agentcontroller = AgentController(api_client)

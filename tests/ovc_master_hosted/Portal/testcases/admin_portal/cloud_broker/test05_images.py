@@ -19,12 +19,14 @@ class ImagesTests(Framework):
         #. get number of images
         #. try paging from the available page numbers and verify it should succeed
         """
-        self.lg('%s STARTED' % self._testID)
-        self.lg('1- go to Images page')
+        self.lg("%s STARTED" % self._testID)
+        self.lg("1- go to Images page")
         self.Images.get_it()
         self.assertTrue(self.Images.is_at())
-        self.lg('2- try paging from the available page numbers and verify it should succeed ')
-        self.assertTrue(self.Tables.check_show_list('images'))
+        self.lg(
+            "2- try paging from the available page numbers and verify it should succeed "
+        )
+        self.assertTrue(self.Tables.check_show_list("images"))
 
     def test02_image_page_table_sorting(self):
         """ PRTL-042
@@ -35,11 +37,11 @@ class ImagesTests(Framework):
         #. get all table head elements
         #. sorting of all fields of images table, should be working as expected
         """
-        self.lg('%s STARTED' % self._testID)
-        self.lg('- go to image bage')
+        self.lg("%s STARTED" % self._testID)
+        self.lg("- go to image bage")
         self.Images.get_it()
         self.assertTrue(self.Images.is_at())
-        self.assertTrue(self.Tables.check_sorting_table('images'))
+        self.assertTrue(self.Tables.check_sorting_table("images"))
 
     def test03_image_page_table_paging_buttons(self):
         """ PRTL-043
@@ -51,13 +53,12 @@ class ImagesTests(Framework):
         #. get number of images
         #. try paging from start/previous/next/last and verify it should succeed
         """
-        self.lg('%s STARTED' % self._testID)
+        self.lg("%s STARTED" % self._testID)
         self.Images.get_it()
         self.assertTrue(self.Images.is_at())
-        self.assertTrue(self.Tables.check_next_previous_buttons('images'))
+        self.assertTrue(self.Tables.check_next_previous_buttons("images"))
 
-    @parameterized.expand(['Name',
-                           'Status'])
+    @parameterized.expand(["Name", "Status"])
     def test04_image_page_searchbox(self, column):
         """ PRTL-044
         *Test case to make sure that search boxes of images page are working as expected*
@@ -67,11 +68,13 @@ class ImagesTests(Framework):
         #. go to images page.
         #. try use the search box in every column and  verfiy it return the right value
         """
-        self.lg('1- go to Images page')
+        self.lg("1- go to Images page")
         self.Images.get_it()
         self.assertTrue(self.Images.is_at())
-        self.lg('try the search box in every column and verfiy it return the right value')
-        self.assertTrue(self.Tables.check_data_filters('images', column))
+        self.lg(
+            "try the search box in every column and verfiy it return the right value"
+        )
+        self.assertTrue(self.Tables.check_data_filters("images", column))
 
     def test05_stack_table_in_image_page_test(self):
         """ PRTL-045
@@ -85,17 +88,21 @@ class ImagesTests(Framework):
         #. sorting of all fields of virtual machine table, should be working as expected
         #. try paging from start/previous/next/last and verify it should succeed
         """
-        self.lg('- go to Images page')
+        self.lg("- go to Images page")
         self.Images.get_it()
         self.assertTrue(self.Images.is_at())
-        image = choice(['Ubuntu', 'Windows'])
+        image = choice(["Ubuntu", "Windows"])
         self.Images.open_image_page(image=image)
-        self.lg('-  try paging from the available page numbers and verify it should succeed ')
-        self.assertTrue(self.Tables.check_show_list('stacks'))
-        self.lg('- sorting of all fields of stack table, should be working as expected')
-        self.assertTrue(self.Tables.check_sorting_table('stacks'))
-        self.lg('- try paging from start/previous/next/last and verify it should succeed')
-        self.assertTrue(self.Tables.check_next_previous_buttons('stacks'))
+        self.lg(
+            "-  try paging from the available page numbers and verify it should succeed "
+        )
+        self.assertTrue(self.Tables.check_show_list("stacks"))
+        self.lg("- sorting of all fields of stack table, should be working as expected")
+        self.assertTrue(self.Tables.check_sorting_table("stacks"))
+        self.lg(
+            "- try paging from start/previous/next/last and verify it should succeed"
+        )
+        self.assertTrue(self.Tables.check_next_previous_buttons("stacks"))
 
     def test06_VM_table_in_image_page_test(self):
         """ PRTL-046
@@ -109,23 +116,23 @@ class ImagesTests(Framework):
         #. sorting of all fields of virtual machine table, should be working as expected
         #. try paging from start/previous/next/last and verify it should succeed
         """
-        self.lg('1- go to Images page')
+        self.lg("1- go to Images page")
         self.Images.get_it()
         self.assertTrue(self.Images.is_at())
-        image = choice(['Ubuntu', 'Windows'])
+        image = choice(["Ubuntu", "Windows"])
         self.Images.open_image_page(image=image)
-        self.lg('-  try paging from the available page numbers and verify it should succeed ')
-        self.assertTrue(self.Tables.check_show_list('machines'))
-        self.lg('- sorting of all fields of stack table, should be working as expected')
-        self.assertTrue(self.Tables.check_sorting_table('machines'))
-        self.lg('- try paging from start/previous/next/last and verify it should succeed')
-        self.assertTrue(self.Tables.check_next_previous_buttons('machines'))
+        self.lg(
+            "-  try paging from the available page numbers and verify it should succeed "
+        )
+        self.assertTrue(self.Tables.check_show_list("machines"))
+        self.lg("- sorting of all fields of stack table, should be working as expected")
+        self.assertTrue(self.Tables.check_sorting_table("machines"))
+        self.lg(
+            "- try paging from start/previous/next/last and verify it should succeed"
+        )
+        self.assertTrue(self.Tables.check_next_previous_buttons("machines"))
 
-    @parameterized.expand(['ID',
-                           'Grid ID',
-                           'Name',
-                           'Status',
-                           'Reference ID'])
+    @parameterized.expand(["ID", "Grid ID", "Name", "Status", "Reference ID"])
     def test07_search_boxes_in_stack_in_image_page_test(self, column):
         """ PRTL-047
         *Test case to make sure that search boxes of stack table  image page are working as expected*
@@ -136,19 +143,16 @@ class ImagesTests(Framework):
         #. open one random  image page
         #. try use the search box in every column and  verfiy it return the right value in stack table
         """
-        self.lg('1- go to Images page')
+        self.lg("1- go to Images page")
         self.Images.get_it()
-        image = choice(['Ubuntu', 'Windows'])
+        image = choice(["Ubuntu", "Windows"])
         self.Images.open_image_page(image=image)
-        self.lg('try the search box in every column and verfiy it return the right value')
-        self.assertTrue(self.Tables.check_data_filters('stacks', column))
+        self.lg(
+            "try the search box in every column and verfiy it return the right value"
+        )
+        self.assertTrue(self.Tables.check_data_filters("stacks", column))
 
-    @parameterized.expand(['Name',
-                           'Hostname',
-                           'Status',
-                           'Cloud Space',
-                           'Stack ID']
-                          )
+    @parameterized.expand(["Name", "Hostname", "Status", "Cloud Space", "Stack ID"])
     def test08_search_boxes_in_VM_in_image_page_test(self, column):
         """ PRTL-048
         *Test case to make sure that search boxes of VM table in image page  are working as expected*
@@ -159,10 +163,12 @@ class ImagesTests(Framework):
         #. open one random  image page
         #. try use the search box in every column and  verfiy it return the right value in VM table
         """
-        self.lg('1- go to Images page')
+        self.lg("1- go to Images page")
         self.Images.get_it()
         self.assertTrue(self.Images.is_at())
-        image = choice(['Ubuntu', 'Windows'])
+        image = choice(["Ubuntu", "Windows"])
         self.Images.open_image_page(image=image)
-        self.lg('3-try the search box in every column and verfiy it return the right value')
-        self.assertTrue(self.Tables.check_data_filters('machines', column))
+        self.lg(
+            "3-try the search box in every column and verfiy it return the right value"
+        )
+        self.assertTrue(self.Tables.check_data_filters("machines", column))

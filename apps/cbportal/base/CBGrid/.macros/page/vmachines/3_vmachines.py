@@ -1,90 +1,71 @@
-
 def main(j, args, params, tags, tasklet):
     from cloudbrokerlib import resourcestatus
     import cgi
+
     page = args.page
     modifier = j.html.getPageModifierGridDataTables(page)
     stackid = args.getTag("stackid")
     cloudspaceId = args.getTag("cloudspaceid")
-    imageid = args.getTag('imageid')
-    gid = args.getTag('gid')
-    filters = {'status': {'$nin': resourcestatus.Machine.INVALID_STATES}}
-    ccl = j.clients.osis.getNamespace('cloudbroker')
+    imageid = args.getTag("imageid")
+    gid = args.getTag("gid")
+    filters = {"status": {"$nin": resourcestatus.Machine.INVALID_STATES}}
+    ccl = j.clients.osis.getNamespace("cloudbroker")
 
     if stackid:
         stackid = int(stackid)
-        filters['stackId'] = stackid
+        filters["stackId"] = stackid
     if cloudspaceId:
-        filters['cloudspaceId'] = int(cloudspaceId)
+        filters["cloudspaceId"] = int(cloudspaceId)
     if imageid:
-        filters['imageId'] = int(imageid)
+        filters["imageId"] = int(imageid)
 
     if gid:
         gid = int(gid)
-        stacks = ccl.stack.simpleSearch({'gid': gid})
-        stacksids = [stack['id'] for stack in stacks]
-        filters['stackId'] = {'$in': stacksids}
+        stacks = ccl.stack.simpleSearch({"gid": gid})
+        stacksids = [stack["id"] for stack in stacks]
+        filters["stackId"] = {"$in": stacksids}
 
     def stackLinkify(row, field):
-        return '[%s|stack?id=%s]' % (row[field], row[field])
+        return "[%s|stack?id=%s]" % (row[field], row[field])
 
     def nameLinkify(row, field):
         val = row[field]
         if not isinstance(row[field], int):
             val = cgi.escape(row[field])
-        return '[%s|Virtual Machine?id=%s]' % (val, row['id'])
+        return "[%s|Virtual Machine?id=%s]" % (val, row["id"])
 
     def spaceLinkify(row, field):
-        return '[%s|cloud space?id=%s]' % (row[field], row[field])
+        return "[%s|cloud space?id=%s]" % (row[field], row[field])
 
     def get_ip(row, field):
-        ip = ''
-        for nic in row['nics']:
-            if nic['type'] == 'bridge':
-                ip = nic['ipAddress']
+        ip = ""
+        for nic in row["nics"]:
+            if nic["type"] == "bridge":
+                ip = nic["ipAddress"]
                 break
         return ip
 
-
     fields = [
+        {"name": "ID", "value": nameLinkify, "id": "id"},
+        {"name": "Name", "value": nameLinkify, "id": "name", "type": "text"},
+        {"name": "Hostname", "value": "hostName", "id": "hostName", "type": "text"},
+        {"name": "Status", "value": "status", "id": "status"},
         {
-            'name': 'ID',
-            'value': nameLinkify,
-            'id': 'id',
-        }, {
-            'name': 'Name',
-            'value': nameLinkify,
-            'id': 'name',
-            'type': 'text',
-        }, {
-            'name': 'Hostname',
-            'value': 'hostName',
-            'id': 'hostName',
-            'type': 'text',
-        }, {
-            'name': 'Status',
-            'value': 'status',
-            'id': 'status'
-        }, {
-            'name': 'IP Address',
-            'value': get_ip,
-            'id': 'nics.ipAddress',
-            'sortable': False,
-            'filterable': False,
-        }, {
-            'name': 'Cloud Space',
-            'value': spaceLinkify,
-            'id': 'cloudspaceId'
-        }, {
-            'name': 'Stack ID',
-            'value': stackLinkify,
-            'id': 'stackId'
-        }
+            "name": "IP Address",
+            "value": get_ip,
+            "id": "nics.ipAddress",
+            "sortable": False,
+            "filterable": False,
+        },
+        {"name": "Cloud Space", "value": spaceLinkify, "id": "cloudspaceId"},
+        {"name": "Stack ID", "value": stackLinkify, "id": "stackId"},
     ]
 
-    tableid = modifier.addTableFromModel('cloudbroker', 'vmachine', fields, filters, selectable='rows')
-    modifier.addSearchOptions('#%s' % tableid)
-    modifier.addSorting('#%s' % tableid, 1, 'desc')
+    tableid = modifier.addTableFromModel(
+        "cloudbroker", "vmachine", fields, filters, selectable="rows"
+    )
+    modifier.addSearchOptions("#%s" % tableid)
+    modifier.addSorting("#%s" % tableid, 1, "desc")
 
     params.result = page
 

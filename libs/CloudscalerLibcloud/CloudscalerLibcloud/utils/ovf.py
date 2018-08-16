@@ -3,21 +3,19 @@ from jinja2 import Environment, FunctionLoader
 from StringIO import StringIO
 
 SIZES = {
-    'gigabytes': 1024 * 1024 * 1024,
-    'megabytes': 1024 * 1024,
-    'kilobytes': 1024,
-    'bytes': 1,
-    'byte * 2^20': 2**20,
-    'byte * 2^30': 2**30
+    "gigabytes": 1024 * 1024 * 1024,
+    "megabytes": 1024 * 1024,
+    "kilobytes": 1024,
+    "bytes": 1,
+    "byte * 2^20": 2 ** 20,
+    "byte * 2^30": 2 ** 30,
 }
 
 
 def _get_namespaces(xml):
-    return dict([
-        node for _, node in ElementTree.iterparse(
-            StringIO(xml), events=['start-ns']
-        )
-    ])
+    return dict(
+        [node for _, node in ElementTree.iterparse(StringIO(xml), events=["start-ns"])]
+    )
 
 
 def _findsubitem(obj, itemname):
@@ -29,70 +27,94 @@ def _findsubitem(obj, itemname):
 
 def ovf_to_model(ovf):
     namespaces = _get_namespaces(ovf)
-    namespaces.pop('')
+    namespaces.pop("")
     envelope = ElementTree.fromstring(ovf)
-    files = dict((file.get('{%(ovf)s}id' % namespaces), file.get('{%(ovf)s}href' % namespaces))
-                 for file in envelope.findall('ovf:References/ovf:File', namespaces))
-    disksobjs = (ds.find('ovf:Disk', namespaces) for ds in envelope.findall('ovf:DiskSection', namespaces))
+    files = dict(
+        (file.get("{%(ovf)s}id" % namespaces), file.get("{%(ovf)s}href" % namespaces))
+        for file in envelope.findall("ovf:References/ovf:File", namespaces)
+    )
+    disksobjs = (
+        ds.find("ovf:Disk", namespaces)
+        for ds in envelope.findall("ovf:DiskSection", namespaces)
+    )
     disks = {}
     for obj in disksobjs:
-        units = obj.get('{%(ovf)s}capacityAllocationUnits' % namespaces)
-        size = int(obj.get('{%(ovf)s}capacity' % namespaces))
+        units = obj.get("{%(ovf)s}capacityAllocationUnits" % namespaces)
+        size = int(obj.get("{%(ovf)s}capacity" % namespaces))
         if units:
             size = size * SIZES[units]
 
-        disks[obj.get('{%(ovf)s}diskId' % namespaces)] = {
-            'size': size,
-            'name': obj.get('{%(ovf)s}diskId' % namespaces),
-            'file': files[obj.get('{%(ovf)s}fileRef' % namespaces)]
+        disks[obj.get("{%(ovf)s}diskId" % namespaces)] = {
+            "size": size,
+            "name": obj.get("{%(ovf)s}diskId" % namespaces),
+            "file": files[obj.get("{%(ovf)s}fileRef" % namespaces)],
         }
-    hw = envelope.find('ovf:VirtualSystem/ovf:VirtualHardwareSection', namespaces)
-    itemobjs = hw.findall('ovf:Item', namespaces)
+    hw = envelope.find("ovf:VirtualSystem/ovf:VirtualHardwareSection", namespaces)
+    itemobjs = hw.findall("ovf:Item", namespaces)
     itemobjsdict = {}
     for item in itemobjs:
-        addressnode = item.find('rasd:Address', namespaces)
+        addressnode = item.find("rasd:Address", namespaces)
         address = addressnode.text if addressnode is not None else None
-        instanceid = _findsubitem(item, 'InstanceID').text
-        resourcetype = _findsubitem(item, 'ResourceType').text
+        instanceid = _findsubitem(item, "InstanceID").text
+        resourcetype = _findsubitem(item, "ResourceType").text
         itemobjsdict[instanceid] = (address, resourcetype)
 
-    storageitemobjs = hw.findall('ovf:StorageItem', namespaces)
+    storageitemobjs = hw.findall("ovf:StorageItem", namespaces)
 
     def get_disk_items(disktype, objects):
         diskobjects = []
         for storage in objects:
-            if storage.find('{}:ResourceType'.format(disktype), namespaces).text == '17':
-                parent = itemobjsdict[storage.find('{}:Parent'.format(disktype), namespaces).text][0]
-                parentaddress = storage.find('{}:AddressOnParent'.format(disktype), namespaces).text
-                disk = disks[storage.find('{}:HostResource'.format(disktype), namespaces).text.split('/')[-1]]
+            if (
+                storage.find("{}:ResourceType".format(disktype), namespaces).text
+                == "17"
+            ):
+                parent = itemobjsdict[
+                    storage.find("{}:Parent".format(disktype), namespaces).text
+                ][0]
+                parentaddress = storage.find(
+                    "{}:AddressOnParent".format(disktype), namespaces
+                ).text
+                disk = disks[
+                    storage.find(
+                        "{}:HostResource".format(disktype), namespaces
+                    ).text.split("/")[-1]
+                ]
                 diskobjects.append(((parent, parentaddress), disk))
         diskobjects.sort()
         return map(lambda x: x[1], diskobjects)
 
     if storageitemobjs:
-        diskitems = get_disk_items('sasd', storageitemobjs)
+        diskitems = get_disk_items("sasd", storageitemobjs)
     else:
-        diskitems = get_disk_items('rasd', itemobjs)
+        diskitems = get_disk_items("rasd", itemobjs)
 
-    namesection = envelope.find('ovf:VirtualSystem/ovf:Name', namespaces)
-    name = namesection.text if namesection is not None else ''
-    infosection = envelope.find('ovf:VirtualSystem/ovf:Info', namespaces)
-    description = infosection.text if infosection is not None else ''
+    namesection = envelope.find("ovf:VirtualSystem/ovf:Name", namespaces)
+    name = namesection.text if namesection is not None else ""
+    infosection = envelope.find("ovf:VirtualSystem/ovf:Info", namespaces)
+    description = infosection.text if infosection is not None else ""
 
-    cpus = [int(_findsubitem(i, 'VirtualQuantity').text) for i in itemobjs if _findsubitem(i, 'ResourceType').text == '3'][0]
-    mem = [int(_findsubitem(i, 'VirtualQuantity').text) * SIZES[_findsubitem(i, 'AllocationUnits').text.lower()]
-           for i in itemobjs if _findsubitem(i, 'ResourceType').text == '4'][0]
+    cpus = [
+        int(_findsubitem(i, "VirtualQuantity").text)
+        for i in itemobjs
+        if _findsubitem(i, "ResourceType").text == "3"
+    ][0]
+    mem = [
+        int(_findsubitem(i, "VirtualQuantity").text)
+        * SIZES[_findsubitem(i, "AllocationUnits").text.lower()]
+        for i in itemobjs
+        if _findsubitem(i, "ResourceType").text == "4"
+    ][0]
     return {
-        'name': name,
-        'description': description,
-        'cpus': cpus,
-        'mem': mem,
-        'disks': diskitems
+        "name": name,
+        "description": description,
+        "cpus": cpus,
+        "mem": mem,
+        "disks": diskitems,
     }
 
 
 def template(name):
-    return ("""<?xml version="1.0"?>
+    return """<?xml version="1.0"?>
 <Envelope ovf:version="2.0" xml:lang="en-US"
  xmlns="http://schemas.dmtf.org/ovf/envelope/2"
  xmlns:ovf="http://schemas.dmtf.org/ovf/envelope/2"
@@ -210,27 +232,30 @@ def template(name):
       {% endfor %}
     </VirtualHardwareSection>
   </VirtualSystem>
-</Envelope>""")
+</Envelope>"""
 
 
 def model_to_ovf(model):
     env = Environment(loader=FunctionLoader(template))
-    return (env.get_template('').render(model))
+    return env.get_template("").render(model)
 
 
 if __name__ == "__main__":
-    print(ovf_to_model(model_to_ovf({
-        'name': 'vm',
-        'description': 'vm-desc',
-        'cpus': 1,
-        'mem': 1024,
-        'os': 'ubuntu',
-        'osname': 'Ubuntu 64',
-        'disks': [{
-            'name': 'vm0.vmdk',
-            'size': '1023123'
-        }, {
-            'name': 'vm1.vmdk',
-            'size': '222222'
-        }]
-    })))
+    print(
+        ovf_to_model(
+            model_to_ovf(
+                {
+                    "name": "vm",
+                    "description": "vm-desc",
+                    "cpus": 1,
+                    "mem": 1024,
+                    "os": "ubuntu",
+                    "osname": "Ubuntu 64",
+                    "disks": [
+                        {"name": "vm0.vmdk", "size": "1023123"},
+                        {"name": "vm1.vmdk", "size": "222222"},
+                    ],
+                }
+            )
+        )
+    )

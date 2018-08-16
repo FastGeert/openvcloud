@@ -1,8 +1,8 @@
 from JumpScale import j
 from cloudbrokerlib.baseactor import BaseActor
 
+
 class cloudapi_locations(BaseActor):
-    
     def list(self, **kwargs):
         """
         List all locations
@@ -17,4 +17,4 @@ class cloudapi_locations(BaseActor):
 
         :return protal url
         """
-        return self.hrd.getStr('instance.cloudbroker.portalurl')
+        return self.hrd.getStr("instance.cloudbroker.portalurl")

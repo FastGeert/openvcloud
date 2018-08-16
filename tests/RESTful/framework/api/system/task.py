@@ -1,4 +1,5 @@
-from framework.api import  utils
+from framework.api import utils
+
 
 class Task:
     def __init__(self, api_client):

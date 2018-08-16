@@ -13,27 +13,27 @@ def generateUsersList(sclient, objdict, accessUserType, users):
     :param accessUserType: specifies whether object is account or cloudspace
     :return: list of users have access to cloudspace
     """
-    for acl in objdict['acl']:
-        if acl['userGroupId'] in [user['id'] for user in users]:
-            if accessUserType == 'cl':
-                users = filter(lambda user: user['id'] != acl['userGroupId'], users)
-        if acl['type'] == 'U':
-            eusers = sclient.user.simpleSearch({'id': acl['userGroupId']})
+    for acl in objdict["acl"]:
+        if acl["userGroupId"] in [user["id"] for user in users]:
+            if accessUserType == "cl":
+                users = filter(lambda user: user["id"] != acl["userGroupId"], users)
+        if acl["type"] == "U":
+            eusers = sclient.user.simpleSearch({"id": acl["userGroupId"]})
             if eusers:
                 user = eusers[0]
-                user['userstatus'] = acl['status']
-            elif acl['status'] == 'INVITED':
+                user["userstatus"] = acl["status"]
+            elif acl["status"] == "INVITED":
                 user = dict()
-                user['id'] = acl['userGroupId']
-                user['emails'] = [acl['userGroupId']]
-                user['userstatus'] = acl['status']
+                user["id"] = acl["userGroupId"]
+                user["emails"] = [acl["userGroupId"]]
+                user["userstatus"] = acl["status"]
             else:
                 user = dict()
-                user['id'] = acl['userGroupId']
-                user['emails'] = ['N/A']
-                user['userstatus'] = 'N/A'
-            user['accessUserType'] = accessUserType
-            user['acl'] = acl['right']
+                user["id"] = acl["userGroupId"]
+                user["emails"] = ["N/A"]
+                user["userstatus"] = "N/A"
+            user["accessUserType"] = accessUserType
+            user["acl"] = acl["right"]
             users.append(user)
     return users
 
@@ -41,7 +41,7 @@ def generateUsersList(sclient, objdict, accessUserType, users):
 def main(j, args, params, tags, tasklet):
 
     params.result = (args.doc, args.doc)
-    id = args.requestContext.params.get('id')
+    id = args.requestContext.params.get("id")
     try:
         id = int(id)
     except:
@@ -50,40 +50,44 @@ def main(j, args, params, tags, tasklet):
         args.doc.applyTemplate({})
         return params
 
-    cbclient = j.clients.osis.getNamespace('cloudbroker')
-    sclient = j.clients.osis.getNamespace('system')
-    vcl = j.clients.osis.getNamespace('vfw')
+    cbclient = j.clients.osis.getNamespace("cloudbroker")
+    sclient = j.clients.osis.getNamespace("system")
+    vcl = j.clients.osis.getNamespace("vfw")
 
     if not cbclient.cloudspace.exists(id):
-        args.doc.applyTemplate({'id': None}, False)
+        args.doc.applyTemplate({"id": None}, False)
         return params
 
     cloudspaceobj = cbclient.cloudspace.get(id)
 
     cloudspacedict = cloudspaceobj.dump()
 
-    accountid = cloudspacedict['accountId']
-    account = cbclient.account.get(accountid).dump() if cbclient.account.exists(accountid) else {'name': 'N/A'}
-    cloudspacedict['accountname'] = account['name']
+    accountid = cloudspacedict["accountId"]
+    account = (
+        cbclient.account.get(accountid).dump()
+        if cbclient.account.exists(accountid)
+        else {"name": "N/A"}
+    )
+    cloudspacedict["accountname"] = account["name"]
 
     # Resource limits
 
     j.apps.cloudbroker.account.cb.fillResourceLimits(cloudspaceobj.resourceLimits)
-    cloudspacedict['reslimits'] = cloudspaceobj.resourceLimits
+    cloudspacedict["reslimits"] = cloudspaceobj.resourceLimits
 
     vfwkey = "%(gid)s_%(networkId)s" % (cloudspacedict)
     if vcl.virtualfirewall.exists(vfwkey):
         network = vcl.virtualfirewall.get(vfwkey).dump()
-        cloudspacedict['network'] = network
+        cloudspacedict["network"] = network
     else:
-        if cloudspacedict['networkId']:
-            cloudspacedict['networkid'] = cloudspacedict['networkId']
+        if cloudspacedict["networkId"]:
+            cloudspacedict["networkid"] = cloudspacedict["networkId"]
         else:
-            cloudspacedict['networkid'] = 'N/A'
-        cloudspacedict['network'] = {'tcpForwardRules': []}
+            cloudspacedict["networkid"] = "N/A"
+        cloudspacedict["network"] = {"tcpForwardRules": []}
     users = list()
-    users = generateUsersList(sclient, account, 'acc', users)
-    cloudspacedict['users'] = generateUsersList(sclient, cloudspacedict, 'cl', users)
+    users = generateUsersList(sclient, account, "acc", users)
+    cloudspacedict["users"] = generateUsersList(sclient, cloudspacedict, "cl", users)
     args.doc.applyTemplate(cloudspacedict, False)
     return params
 

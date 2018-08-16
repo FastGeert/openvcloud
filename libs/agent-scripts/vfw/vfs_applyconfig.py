@@ -18,9 +18,9 @@ def action(name, fwobject):
     import JumpScale.lib.nginx
     import JumpScale.lib.shorewall
     import JumpScale.baselib.remote
-    
+
     host = j.system.platform.lxc.getIp(name)
-    password = j.application.config.get('system.superadmin.passwd')
+    password = j.application.config.get("system.superadmin.passwd")
 
     nginxclient = j.system.platform.nginx.get(host, password)
     shorewallclient = j.system.platform.shorewall.get(host, password)

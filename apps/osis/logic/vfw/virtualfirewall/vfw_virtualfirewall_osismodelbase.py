@@ -1,11 +1,12 @@
 from JumpScale import j
 
+
 class JSModel_osismodel_vfw_wsforwardrule(j.code.classGetJSModelBase()):
     def __init__(self):
         pass
-        self._P_url=""
-        self._P_toUrls=""
-        self._P_guid=""
+        self._P_url = ""
+        self._P_toUrls = ""
+        self._P_guid = ""
 
     @property
     def url(self):
@@ -17,10 +18,13 @@ class JSModel_osismodel_vfw_wsforwardrule(j.code.classGetJSModelBase()):
             if isinstance(value, basestring) and j.basetype.string.checkString(value):
                 value = j.basetype.string.fromString(value)
             else:
-                msg="property url input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: wsforwardrule, value was:" + str(value)
+                msg = (
+                    "property url input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: wsforwardrule, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_url=value
+        self._P_url = value
 
     @url.deleter
     def url(self):
@@ -36,10 +40,13 @@ class JSModel_osismodel_vfw_wsforwardrule(j.code.classGetJSModelBase()):
             if isinstance(value, basestring) and j.basetype.string.checkString(value):
                 value = j.basetype.string.fromString(value)
             else:
-                msg="property toUrls input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: wsforwardrule, value was:" + str(value)
+                msg = (
+                    "property toUrls input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: wsforwardrule, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_toUrls=value
+        self._P_toUrls = value
 
     @toUrls.deleter
     def toUrls(self):
@@ -55,26 +62,31 @@ class JSModel_osismodel_vfw_wsforwardrule(j.code.classGetJSModelBase()):
             if isinstance(value, basestring) and j.basetype.string.checkString(value):
                 value = j.basetype.string.fromString(value)
             else:
-                msg="property guid input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: wsforwardrule, value was:" + str(value)
+                msg = (
+                    "property guid input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: wsforwardrule, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_guid=value
+        self._P_guid = value
 
     @guid.deleter
     def guid(self):
         del self._P_guid
 
+
 from JumpScale import j
+
 
 class JSModel_osismodel_vfw_tcpforwardrule(j.code.classGetJSModelBase()):
     def __init__(self):
         pass
-        self._P_fromAddr=""
-        self._P_fromPort=""
-        self._P_toAddr=""
-        self._P_toPort=""
-        self._P_protocol=""
-        self._P_guid=""
+        self._P_fromAddr = ""
+        self._P_fromPort = ""
+        self._P_toAddr = ""
+        self._P_toPort = ""
+        self._P_protocol = ""
+        self._P_guid = ""
 
     @property
     def fromAddr(self):
@@ -86,10 +98,13 @@ class JSModel_osismodel_vfw_tcpforwardrule(j.code.classGetJSModelBase()):
             if isinstance(value, basestring) and j.basetype.string.checkString(value):
                 value = j.basetype.string.fromString(value)
             else:
-                msg="property fromAddr input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: tcpforwardrule, value was:" + str(value)
+                msg = (
+                    "property fromAddr input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: tcpforwardrule, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_fromAddr=value
+        self._P_fromAddr = value
 
     @fromAddr.deleter
     def fromAddr(self):
@@ -105,10 +120,13 @@ class JSModel_osismodel_vfw_tcpforwardrule(j.code.classGetJSModelBase()):
             if isinstance(value, basestring) and j.basetype.string.checkString(value):
                 value = j.basetype.string.fromString(value)
             else:
-                msg="property fromPort input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: tcpforwardrule, value was:" + str(value)
+                msg = (
+                    "property fromPort input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: tcpforwardrule, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_fromPort=value
+        self._P_fromPort = value
 
     @fromPort.deleter
     def fromPort(self):
@@ -124,10 +142,13 @@ class JSModel_osismodel_vfw_tcpforwardrule(j.code.classGetJSModelBase()):
             if isinstance(value, basestring) and j.basetype.string.checkString(value):
                 value = j.basetype.string.fromString(value)
             else:
-                msg="property toAddr input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: tcpforwardrule, value was:" + str(value)
+                msg = (
+                    "property toAddr input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: tcpforwardrule, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_toAddr=value
+        self._P_toAddr = value
 
     @toAddr.deleter
     def toAddr(self):
@@ -143,10 +164,13 @@ class JSModel_osismodel_vfw_tcpforwardrule(j.code.classGetJSModelBase()):
             if isinstance(value, basestring) and j.basetype.string.checkString(value):
                 value = j.basetype.string.fromString(value)
             else:
-                msg="property toPort input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: tcpforwardrule, value was:" + str(value)
+                msg = (
+                    "property toPort input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: tcpforwardrule, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_toPort=value
+        self._P_toPort = value
 
     @toPort.deleter
     def toPort(self):
@@ -162,10 +186,13 @@ class JSModel_osismodel_vfw_tcpforwardrule(j.code.classGetJSModelBase()):
             if isinstance(value, basestring) and j.basetype.string.checkString(value):
                 value = j.basetype.string.fromString(value)
             else:
-                msg="property protocol input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: tcpforwardrule, value was:" + str(value)
+                msg = (
+                    "property protocol input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: tcpforwardrule, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_protocol=value
+        self._P_protocol = value
 
     @protocol.deleter
     def protocol(self):
@@ -181,45 +208,55 @@ class JSModel_osismodel_vfw_tcpforwardrule(j.code.classGetJSModelBase()):
             if isinstance(value, basestring) and j.basetype.string.checkString(value):
                 value = j.basetype.string.fromString(value)
             else:
-                msg="property guid input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: tcpforwardrule, value was:" + str(value)
+                msg = (
+                    "property guid input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: tcpforwardrule, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_guid=value
+        self._P_guid = value
 
     @guid.deleter
     def guid(self):
         del self._P_guid
 
+
 from JumpScale import j
+
 
 class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
     def __init__(self):
         pass
-        self._P_id=0
-        self._P_gid=0
-        self._P_nid=0
-        self._P_name=""
-        self._P_descr=""
-        self._P_type=""
-        self._P_domain=""
-        self._P_host=""
-        self._P_username=""
-        self._P_password=""
-        self._P_tcpForwardRules=list()
-        self._P_masquerade=True
-        self._P_wsForwardRules=list()
-        self._P_networkid=""
-        self._P_internalip=""
-        self._P_pubips=list()
-        self._P_version=0
-        self._P_vlan=0
-        self._P_state=""
-        self._P_moddate=0
-        self._P_accesstime=0
-        self._P_deployment_jobguid=""
-        self._P_guid=""
-        self._P__meta=list()
-        self._P__meta=["osismodel","vfw","virtualfirewall",1] #@todo version not implemented now, just already foreseen
+        self._P_id = 0
+        self._P_gid = 0
+        self._P_nid = 0
+        self._P_name = ""
+        self._P_descr = ""
+        self._P_type = ""
+        self._P_domain = ""
+        self._P_host = ""
+        self._P_username = ""
+        self._P_password = ""
+        self._P_tcpForwardRules = list()
+        self._P_masquerade = True
+        self._P_wsForwardRules = list()
+        self._P_networkid = ""
+        self._P_internalip = ""
+        self._P_pubips = list()
+        self._P_version = 0
+        self._P_vlan = 0
+        self._P_state = ""
+        self._P_moddate = 0
+        self._P_accesstime = 0
+        self._P_deployment_jobguid = ""
+        self._P_guid = ""
+        self._P__meta = list()
+        self._P__meta = [
+            "osismodel",
+            "vfw",
+            "virtualfirewall",
+            1,
+        ]  # @todo version not implemented now, just already foreseen
 
     @property
     def id(self):
@@ -231,10 +268,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.integer.checkString(value):
                 value = j.basetype.integer.fromString(value)
             else:
-                msg="property id input error, needs to be int, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property id input error, needs to be int, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_id=value
+        self._P_id = value
 
     @id.deleter
     def id(self):
@@ -250,10 +290,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.integer.checkString(value):
                 value = j.basetype.integer.fromString(value)
             else:
-                msg="property gid input error, needs to be int, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property gid input error, needs to be int, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_gid=value
+        self._P_gid = value
 
     @gid.deleter
     def gid(self):
@@ -269,10 +312,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.integer.checkString(value):
                 value = j.basetype.integer.fromString(value)
             else:
-                msg="property nid input error, needs to be int, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property nid input error, needs to be int, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_nid=value
+        self._P_nid = value
 
     @nid.deleter
     def nid(self):
@@ -288,10 +334,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.string.checkString(value):
                 value = j.basetype.string.fromString(value)
             else:
-                msg="property name input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property name input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_name=value
+        self._P_name = value
 
     @name.deleter
     def name(self):
@@ -307,10 +356,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.string.checkString(value):
                 value = j.basetype.string.fromString(value)
             else:
-                msg="property descr input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property descr input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_descr=value
+        self._P_descr = value
 
     @descr.deleter
     def descr(self):
@@ -326,10 +378,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.string.checkString(value):
                 value = j.basetype.string.fromString(value)
             else:
-                msg="property type input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property type input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_type=value
+        self._P_type = value
 
     @type.deleter
     def type(self):
@@ -345,10 +400,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.string.checkString(value):
                 value = j.basetype.string.fromString(value)
             else:
-                msg="property domain input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property domain input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_domain=value
+        self._P_domain = value
 
     @domain.deleter
     def domain(self):
@@ -364,10 +422,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.string.checkString(value):
                 value = j.basetype.string.fromString(value)
             else:
-                msg="property host input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property host input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_host=value
+        self._P_host = value
 
     @host.deleter
     def host(self):
@@ -383,10 +444,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.string.checkString(value):
                 value = j.basetype.string.fromString(value)
             else:
-                msg="property username input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property username input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_username=value
+        self._P_username = value
 
     @username.deleter
     def username(self):
@@ -402,10 +466,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.string.checkString(value):
                 value = j.basetype.string.fromString(value)
             else:
-                msg="property password input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property password input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_password=value
+        self._P_password = value
 
     @password.deleter
     def password(self):
@@ -421,10 +488,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.list.checkString(value):
                 value = j.basetype.list.fromString(value)
             else:
-                msg="property tcpForwardRules input error, needs to be list, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property tcpForwardRules input error, needs to be list, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_tcpForwardRules=value
+        self._P_tcpForwardRules = value
 
     @tcpForwardRules.deleter
     def tcpForwardRules(self):
@@ -440,10 +510,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.boolean.checkString(value):
                 value = j.basetype.boolean.fromString(value)
             else:
-                msg="property masquerade input error, needs to be bool, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property masquerade input error, needs to be bool, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_masquerade=value
+        self._P_masquerade = value
 
     @masquerade.deleter
     def masquerade(self):
@@ -459,10 +532,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.list.checkString(value):
                 value = j.basetype.list.fromString(value)
             else:
-                msg="property wsForwardRules input error, needs to be list, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property wsForwardRules input error, needs to be list, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_wsForwardRules=value
+        self._P_wsForwardRules = value
 
     @wsForwardRules.deleter
     def wsForwardRules(self):
@@ -478,10 +554,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.string.checkString(value):
                 value = j.basetype.string.fromString(value)
             else:
-                msg="property networkid input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property networkid input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_networkid=value
+        self._P_networkid = value
 
     @networkid.deleter
     def networkid(self):
@@ -497,10 +576,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.string.checkString(value):
                 value = j.basetype.string.fromString(value)
             else:
-                msg="property internalip input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property internalip input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_internalip=value
+        self._P_internalip = value
 
     @internalip.deleter
     def internalip(self):
@@ -516,10 +598,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.list.checkString(value):
                 value = j.basetype.list.fromString(value)
             else:
-                msg="property pubips input error, needs to be list, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property pubips input error, needs to be list, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_pubips=value
+        self._P_pubips = value
 
     @pubips.deleter
     def pubips(self):
@@ -535,10 +620,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.integer.checkString(value):
                 value = j.basetype.integer.fromString(value)
             else:
-                msg="property version input error, needs to be int, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property version input error, needs to be int, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_version=value
+        self._P_version = value
 
     @version.deleter
     def version(self):
@@ -554,10 +642,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.integer.checkString(value):
                 value = j.basetype.integer.fromString(value)
             else:
-                msg="property vlan input error, needs to be int, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property vlan input error, needs to be int, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_vlan=value
+        self._P_vlan = value
 
     @vlan.deleter
     def vlan(self):
@@ -573,10 +664,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.string.checkString(value):
                 value = j.basetype.string.fromString(value)
             else:
-                msg="property state input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property state input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_state=value
+        self._P_state = value
 
     @state.deleter
     def state(self):
@@ -592,10 +686,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.integer.checkString(value):
                 value = j.basetype.integer.fromString(value)
             else:
-                msg="property moddate input error, needs to be int, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property moddate input error, needs to be int, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_moddate=value
+        self._P_moddate = value
 
     @moddate.deleter
     def moddate(self):
@@ -611,10 +708,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.integer.checkString(value):
                 value = j.basetype.integer.fromString(value)
             else:
-                msg="property accesstime input error, needs to be int, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property accesstime input error, needs to be int, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_accesstime=value
+        self._P_accesstime = value
 
     @accesstime.deleter
     def accesstime(self):
@@ -630,10 +730,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.string.checkString(value):
                 value = j.basetype.string.fromString(value)
             else:
-                msg="property deployment_jobguid input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property deployment_jobguid input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_deployment_jobguid=value
+        self._P_deployment_jobguid = value
 
     @deployment_jobguid.deleter
     def deployment_jobguid(self):
@@ -649,10 +752,13 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.string.checkString(value):
                 value = j.basetype.string.fromString(value)
             else:
-                msg="property guid input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property guid input error, needs to be str, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P_guid=value
+        self._P_guid = value
 
     @guid.deleter
     def guid(self):
@@ -668,34 +774,36 @@ class vfw_virtualfirewall_osismodelbase(j.code.classGetJSRootModelBase()):
             if isinstance(value, basestring) and j.basetype.list.checkString(value):
                 value = j.basetype.list.fromString(value)
             else:
-                msg="property _meta input error, needs to be list, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:" + str(value)
+                msg = (
+                    "property _meta input error, needs to be list, specfile: /opt/jumpscale7/apps/osis/logic/vfw/model.spec, name model: virtualfirewall, value was:"
+                    + str(value)
+                )
                 raise TypeError(msg)
 
-        self._P__meta=value
+        self._P__meta = value
 
     @_meta.deleter
     def _meta(self):
         del self._P__meta
 
+    def new_tcpForwardRule(self, value=None):
 
-    def new_tcpForwardRule(self,value=None):
-
-        if value==None:
-            value2=JSModel_osismodel_vfw_tcpforwardrule()
+        if value == None:
+            value2 = JSModel_osismodel_vfw_tcpforwardrule()
         else:
-            value2=value
+            value2 = value
         self._P_tcpForwardRules.append(value2)
         if self._P_tcpForwardRules[-1].__dict__.has_key("_P_id"):
-            self._P_tcpForwardRules[-1].id=len(self._P_tcpForwardRules)
+            self._P_tcpForwardRules[-1].id = len(self._P_tcpForwardRules)
         return self._P_tcpForwardRules[-1]
 
-    def new_wsForwardRule(self,value=None):
+    def new_wsForwardRule(self, value=None):
 
-        if value==None:
-            value2=JSModel_osismodel_vfw_wsforwardrule()
+        if value == None:
+            value2 = JSModel_osismodel_vfw_wsforwardrule()
         else:
-            value2=value
+            value2 = value
         self._P_wsForwardRules.append(value2)
         if self._P_wsForwardRules[-1].__dict__.has_key("_P_id"):
-            self._P_wsForwardRules[-1].id=len(self._P_wsForwardRules)
+            self._P_wsForwardRules[-1].id = len(self._P_wsForwardRules)
         return self._P_wsForwardRules[-1]

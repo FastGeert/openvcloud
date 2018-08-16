@@ -1,5 +1,6 @@
 from framework.api import utils
 
+
 class UserManager:
     def __init__(self, api_client):
         self._api = api_client
@@ -9,24 +10,24 @@ class UserManager:
 
     def create(self, **kwargs):
         data = {
-            'username': utils.random_string(),
-            'password': utils.random_string(),
-            'groups': ['admin'],
-            'emails': ['{}@test.com'.format(utils.random_string())],
-            'domain': utils.random_string(),
-            'provider': utils.random_string()
+            "username": utils.random_string(),
+            "password": utils.random_string(),
+            "groups": ["admin"],
+            "emails": ["{}@test.com".format(utils.random_string())],
+            "domain": utils.random_string(),
+            "provider": utils.random_string(),
         }
-        data.update(** kwargs)
-        return data, self._api.system.usermanager.create(** data)
+        data.update(**kwargs)
+        return data, self._api.system.usermanager.create(**data)
 
     def createGroup(self, **kwargs):
         data = {
-            'name': utils.random_string(),
-            'domain': utils.random_string(),
-            'description': utils.random_string(),
+            "name": utils.random_string(),
+            "domain": utils.random_string(),
+            "description": utils.random_string(),
         }
-        data.update(** kwargs)
-        return data, self._api.system.usermanager.createGroup(** data)
+        data.update(**kwargs)
+        return data, self._api.system.usermanager.createGroup(**data)
 
     def delete(self, username):
         return self._api.system.usermanager.delete(username=username)
@@ -36,24 +37,24 @@ class UserManager:
 
     def editGroup(self, name, **kwargs):
         data = {
-            'name': name,
-            'domain': utils.random_string(),
-            'description': utils.random_string(),
-            'users': []
+            "name": name,
+            "domain": utils.random_string(),
+            "description": utils.random_string(),
+            "users": [],
         }
-        data.update(** kwargs)
-        return data, self._api.system.usermanager.editGroup(** data)
+        data.update(**kwargs)
+        return data, self._api.system.usermanager.editGroup(**data)
 
     def editUser(self, username, **kwargs):
         data = {
-            'username': username,
-            'domain': utils.random_string(),
-            'password': utils.random_string(),
-            'emails': [utils.random_string() + '@test.com'],
-            'groups': ['admin']
+            "username": username,
+            "domain": utils.random_string(),
+            "password": utils.random_string(),
+            "emails": [utils.random_string() + "@test.com"],
+            "groups": ["admin"],
         }
-        data.update(** kwargs)
-        return data, self._api.system.usermanager.editUser(** data)
+        data.update(**kwargs)
+        return data, self._api.system.usermanager.editUser(**data)
 
     def userexists(self, name):
         return self._api.system.usermanager.userexists(name=name)

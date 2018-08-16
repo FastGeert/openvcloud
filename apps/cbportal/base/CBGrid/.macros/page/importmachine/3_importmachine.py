@@ -3,11 +3,11 @@ from JumpScale.portal.docgenerator.popup import Popup
 
 def main(j, args, params, tags, tasklet):
     params.result = page = args.page
-    cloudspaceId = int(args.getTag('cloudspaceId'))
-    scl = j.clients.osis.getNamespace('cloudbroker')
+    cloudspaceId = int(args.getTag("cloudspaceId"))
+    scl = j.clients.osis.getNamespace("cloudbroker")
 
     cloudspace = scl.cloudspace.get(cloudspaceId)
-    stacks = scl.stack.search({'gid': cloudspace.gid, 'status': 'ENABLED'})[1:]
+    stacks = scl.stack.search({"gid": cloudspace.gid, "status": "ENABLED"})[1:]
     sizes = scl.size.search({})[1:]
 
     dropdisksizes = list()
@@ -15,29 +15,32 @@ def main(j, args, params, tags, tasklet):
     disksizes = set()
 
     def sizeSorter(size):
-        return size['memory']
+        return size["memory"]
 
     def sortName(item):
-        return item['name']
+        return item["name"]
 
     for size in sorted(disksizes):
         dropdisksizes.append(("%s GB" % size, str(size)))
 
     for stack in sorted(stacks, key=sortName):
-        dropstacks.append((stack['name'], stack['id']))
+        dropstacks.append((stack["name"], stack["id"]))
 
-    popup = Popup(id='importmachine', header='Import Machine',
-                  submit_url='/restmachine/cloudapi/machines/importOVF',
-                  reload_on_success=False)
-    popup.addText('Machine Name', 'name', required=True)
-    popup.addText('Machine Description', 'desc', required=True)
-    popup.addText('Import Link', 'link', required=True)
-    popup.addText('OVF path', 'path')
-    popup.addText('Username for Link', 'username')
-    popup.addText('Password for Link', 'passwd', type='password')
-    popup.addNumber('Number of VCPUS', 'vcpus')
-    popup.addNumber('Amount of memory', 'memory')
-    popup.addHiddenField('cloudspaceId', cloudspaceId)
+    popup = Popup(
+        id="importmachine",
+        header="Import Machine",
+        submit_url="/restmachine/cloudapi/machines/importOVF",
+        reload_on_success=False,
+    )
+    popup.addText("Machine Name", "name", required=True)
+    popup.addText("Machine Description", "desc", required=True)
+    popup.addText("Import Link", "link", required=True)
+    popup.addText("OVF path", "path")
+    popup.addText("Username for Link", "username")
+    popup.addText("Password for Link", "passwd", type="password")
+    popup.addNumber("Number of VCPUS", "vcpus")
+    popup.addNumber("Amount of memory", "memory")
+    popup.addHiddenField("cloudspaceId", cloudspaceId)
     popup.write_html(page)
 
     return params

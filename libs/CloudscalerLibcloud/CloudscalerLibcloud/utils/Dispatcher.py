@@ -12,7 +12,9 @@ class Dispatcher(object):
         self.phy_count = cpu_count()
         self.host_count = self.get_cpu_host_count()
         self.cpus = {i: CPU(i) for i in range(self.host_count, self.phy_count)}
-        self.quarantine_prio = [i for i in reversed(range(self.host_count, self.phy_count))]
+        self.quarantine_prio = [
+            i for i in reversed(range(self.host_count, self.phy_count))
+        ]
         self.connection = LibvirtUtil()
         self.init_quarantine()
 
@@ -32,16 +34,24 @@ class Dispatcher(object):
 
     @staticmethod
     def is_quarantined(vmid):
-        _, out = j.system.process.execute('virsh vcpupin "%s" --live' % (vmid), ignoreErrorOutput=True)
-        vals = [map(lambda y: y.strip(), x.split(':')) for x in out.split('\n')[2:] if x]
-        if not vals or '-' in vals[0][1]:
+        _, out = j.system.process.execute(
+            'virsh vcpupin "%s" --live' % (vmid), ignoreErrorOutput=True
+        )
+        vals = [
+            map(lambda y: y.strip(), x.split(":")) for x in out.split("\n")[2:] if x
+        ]
+        if not vals or "-" in vals[0][1]:
             return False
         return True
 
     @staticmethod
     def get_quarantined_vm_pins(vmid):
-        _, out = j.system.process.execute('virsh vcpupin "%s" --live' % (vmid), ignoreErrorOutput=True)
-        vals = [map(lambda y: y.strip(), x.split(':')) for x in out.split('\n')[2:] if x]
+        _, out = j.system.process.execute(
+            'virsh vcpupin "%s" --live' % (vmid), ignoreErrorOutput=True
+        )
+        vals = [
+            map(lambda y: y.strip(), x.split(":")) for x in out.split("\n")[2:] if x
+        ]
         if not Dispatcher.is_quarantined(vmid):
             return {}
         else:
@@ -49,14 +59,14 @@ class Dispatcher(object):
 
     def init_quarantine(self):
         for domain in self.connection.list_domains():
-            if domain['state'] == libvirt.VIR_DOMAIN_RUNNING:
-                vmid = domain['id']
-                pins = Dispatcher.get_quarantined_vm_pins(domain['id'])
+            if domain["state"] == libvirt.VIR_DOMAIN_RUNNING:
+                vmid = domain["id"]
+                pins = Dispatcher.get_quarantined_vm_pins(domain["id"])
                 for vcpu, pcpu in pins.items():
                     self.cpus[pcpu].incr(vmid)
 
     def alloc(self, vmid, vcpus):
-        cpus = '%s-%s' % (self.host_count, self.phy_count - 1)
+        cpus = "%s-%s" % (self.host_count, self.phy_count - 1)
         return {i: cpus for i in range(vcpus)}
 
     def dealloc(self, vmid):
@@ -148,7 +158,11 @@ class Dispatcher(object):
     @staticmethod
     def set_cpu(vmid, pcpus):
         for i in pcpus:
-            j.system.process.execute("virsh vcpupin %s --vcpu '%d' --cpulist '%s' --live" % (vmid, i, pcpus[i]), ignoreErrorOutput=True)
+            j.system.process.execute(
+                "virsh vcpupin %s --vcpu '%d' --cpulist '%s' --live"
+                % (vmid, i, pcpus[i]),
+                ignoreErrorOutput=True,
+            )
 
     @staticmethod
     def move_cpus(vmid, count, from_, to):
@@ -156,7 +170,11 @@ class Dispatcher(object):
         for i, k in pins.items():
             if k == from_:
                 count -= 1
-                j.system.process.execute("virsh vcpupin %s --vcpu '%d' --cpulist '%s' --live" % (vmid, i, to), ignoreErrorOutput=True)
+                j.system.process.execute(
+                    "virsh vcpupin %s --vcpu '%d' --cpulist '%s' --live"
+                    % (vmid, i, to),
+                    ignoreErrorOutput=True,
+                )
                 if count == 0:
                     return
         raise RuntimeError("cannot move this number of vcores")

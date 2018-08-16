@@ -15,6 +15,6 @@ roles = []
 
 def action(machineid):
     from CloudscalerLibcloud.utils.libvirtutil import LibvirtUtil
+
     connection = LibvirtUtil()
     return connection.backup_machine_cephfs(machineid)
-

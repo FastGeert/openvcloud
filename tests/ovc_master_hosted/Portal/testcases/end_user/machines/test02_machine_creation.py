@@ -7,8 +7,10 @@ class Read(Framework):
 
     def setUp(self):
         super(Read, self).setUp()
-        self.Login.Login(cookies_login=True, portal='enduser')
-        self.EUMachines.create_default_account_cloudspace(self.admin_username, self.account, self.cloudspace)
+        self.Login.Login(cookies_login=True, portal="enduser")
+        self.EUMachines.create_default_account_cloudspace(
+            self.admin_username, self.account, self.cloudspace
+        )
 
     def test06_machine_create(self, image_name="Ubuntu 16.04 x64"):
         """ PRTL-011
@@ -20,9 +22,15 @@ class Read(Framework):
         #. delete the new machine
 
         """
-        self.lg('%s STARTED' % self._testID)
-        self.lg(' create %s machine ' % self.machine_name)
-        self.assertTrue(self.EUMachines.end_user_create_virtual_machine(image_name,self.machine_name))
-        self.lg('delete %s machine ' % self.machine_name)
-        self.assertTrue(self.EUMachines.end_user_delete_virtual_machine(self.machine_name))
-        self.lg('%s ENDED' % self._testID)
+        self.lg("%s STARTED" % self._testID)
+        self.lg(" create %s machine " % self.machine_name)
+        self.assertTrue(
+            self.EUMachines.end_user_create_virtual_machine(
+                image_name, self.machine_name
+            )
+        )
+        self.lg("delete %s machine " % self.machine_name)
+        self.assertTrue(
+            self.EUMachines.end_user_delete_virtual_machine(self.machine_name)
+        )
+        self.lg("%s ENDED" % self._testID)

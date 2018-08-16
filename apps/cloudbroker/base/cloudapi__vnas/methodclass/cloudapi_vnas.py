@@ -16,7 +16,7 @@ class cloudapi_vnas(j.code.classGetBase()):
         self.actorname = "vnas"
         self.appname = "cloudapi"
         # Should be configurable!!
-        con = j.ssh.connect('10.101.104.128', port=1501, keypath='/root/.ssh/id_rsa')
+        con = j.ssh.connect("10.101.104.128", port=1501, keypath="/root/.ssh/id_rsa")
         self.sambacl = j.ssh.samba.get(con)
         # cloudapi_vnas_osis.__init__(self)
 
@@ -29,8 +29,11 @@ class cloudapi_vnas(j.code.classGetBase()):
         param:readonly True for read only access
         result bool
         """
-        appsecret = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(12))
-        appname = '%s[%s]' % (cloudspace, appname)
+        appsecret = "".join(
+            random.SystemRandom().choice(string.ascii_uppercase + string.digits)
+            for _ in range(12)
+        )
+        appname = "%s[%s]" % (cloudspace, appname)
         self.sambacl.addUser(appname, appsecret)
         return self.sambacl.grantaccess(appname, sharename, cloudspace, readonly)
 
@@ -66,5 +69,5 @@ class cloudapi_vnas(j.code.classGetBase()):
         param:appname name of the application to revoke
         result 
         """
-        appname = '%s[%s]' % (cloudspace, appname)
+        appname = "%s[%s]" % (cloudspace, appname)
         return revokeaccess(appname, sharename, cloudspace, readonly)

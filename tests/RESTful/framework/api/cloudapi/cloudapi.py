@@ -9,6 +9,7 @@ from framework.api.cloudapi.portforwarding import Portforwarding
 from framework.api.cloudapi.sizes import Sizes
 from framework.api.cloudapi.users import Users
 
+
 class Cloudapi:
     def __init__(self, api_client):
         self.accounts = Accounts(api_client)

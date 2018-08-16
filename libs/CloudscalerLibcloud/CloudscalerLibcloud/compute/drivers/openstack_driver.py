@@ -6,15 +6,16 @@ from libcloud.compute.base import NodeSize, NodeImage, Node
 from libcloud.pricing import get_size_price
 from datetime import datetime
 
-class DictLikecNodeImage():
+
+class DictLikecNodeImage:
     def __init__(self, image):
         self._image = image
 
     def __getitem__(self, item):
-       return getattr(self._image, item)
+        return getattr(self._image, item)
+
 
 class OpenStackNodeDriver(OpenStack_1_1_NodeDriver):
-
     def ex_list_volume_snapshots(self):
         """
         LIST VOLUME SNAPSHOTS
@@ -24,7 +25,8 @@ class OpenStackNodeDriver(OpenStack_1_1_NodeDriver):
         :rtype: ``list``
         """
         return self._to_volume_snapshots(
-            self.connection.request('/os-snapshots').object)
+            self.connection.request("/os-snapshots").object
+        )
 
     def ex_create_volume_snapshot(self, volume, name, description=None, force=False):
         """
@@ -46,15 +48,20 @@ class OpenStackNodeDriver(OpenStack_1_1_NodeDriver):
 
         :rtype:     :class:`VolumeSnapshot`
         """
-        
-        data = {'snapshot': {'display_name': name,
-                             'display_description': description,
-                             'volume_id': volume.id,
-                             'force': force}}
 
-        return self._to_volume_snapshot(self.connection.request('/os-snapshots',
-                                                         method='POST',
-                                                         data=data).object)
+        data = {
+            "snapshot": {
+                "display_name": name,
+                "display_description": description,
+                "volume_id": volume.id,
+                "force": force,
+            }
+        }
+
+        return self._to_volume_snapshot(
+            self.connection.request("/os-snapshots", method="POST", data=data).object
+        )
+
     def ex_delete_volume_snapshot(self, snapshot):
         """
         DELETE VOLUME SNAPSHOT
@@ -66,10 +73,11 @@ class OpenStackNodeDriver(OpenStack_1_1_NodeDriver):
 
         :rtype:     ``bool``
         """
-        resp = self.connection.request('/os-snapshots/%s' % snapshot.id,
-                                       method='DELETE')
+        resp = self.connection.request(
+            "/os-snapshots/%s" % snapshot.id, method="DELETE"
+        )
         return resp.status == httplib.NO_CONTENT
-    
+
     def ex_create_volume_snapshot(self, volume, name, description=None, force=False):
         """
         
@@ -92,14 +100,18 @@ class OpenStackNodeDriver(OpenStack_1_1_NodeDriver):
         :rtype:     :class:`VolumeSnapshot`
 
         """
-        data = {'snapshot': {'display_name': name,
-                             'display_description': description,
-                             'volume_id': volume.id,
-                             'force': force}}
+        data = {
+            "snapshot": {
+                "display_name": name,
+                "display_description": description,
+                "volume_id": volume.id,
+                "force": force,
+            }
+        }
 
-        return self._to_volume_snapshot(self.connection.request('/os-snapshots',
-                                                         method='POST',
-                                                         data=data).object)
+        return self._to_volume_snapshot(
+            self.connection.request("/os-snapshots", method="POST", data=data).object
+        )
 
     def ex_create_snapshot(self, node, name, snapshottype=None):
         """
@@ -116,8 +128,10 @@ class OpenStackNodeDriver(OpenStack_1_1_NodeDriver):
         :rtype: :class:`NodeImage`
         
         """
-        return DictLikecNodeImage(self.create_image(node, name, {'image_type':'snapshot'}))
-    
+        return DictLikecNodeImage(
+            self.create_image(node, name, {"image_type": "snapshot"})
+        )
+
     def ex_delete_snapshot(self, node, name):
         """
         DELETE IMAGE SNAPSHOT (INSTEAD OF VOLUME SNAPSHOT)
@@ -134,11 +148,13 @@ class OpenStackNodeDriver(OpenStack_1_1_NodeDriver):
         
         """
         for image in self.list_images():
-            if node.id == image.extra['metadata'].get('instance_uuid') and image.name == name:
+            if (
+                node.id == image.extra["metadata"].get("instance_uuid")
+                and image.name == name
+            ):
                 return self.delete_image(image)
         return True
-    
-    
+
     def _list_snapshots(self, node):
         """
         HELPER FUNCTION
@@ -153,12 +169,18 @@ class OpenStackNodeDriver(OpenStack_1_1_NodeDriver):
         """
         result = []
         for image in self.list_images():
-            if image.extra['metadata'].get('instance_uuid') == node.id and\
-                        image.extra['metadata'].get('image_type') == 'snapshot':
-                image.epoch = int(datetime.strptime(image.extra['created'], '%Y-%m-%dT%H:%M:%SZ').strftime('%s'))
+            if (
+                image.extra["metadata"].get("instance_uuid") == node.id
+                and image.extra["metadata"].get("image_type") == "snapshot"
+            ):
+                image.epoch = int(
+                    datetime.strptime(
+                        image.extra["created"], "%Y-%m-%dT%H:%M:%SZ"
+                    ).strftime("%s")
+                )
                 result.append(image)
         return result
-        
+
     def ex_list_snapshots(self, node):
         """
         LIST IMAGE SNAPSHOTS (INSTEAD OF VOLUME SNAPSHOTS)
@@ -171,9 +193,12 @@ class OpenStackNodeDriver(OpenStack_1_1_NodeDriver):
 
         :rtype: ``list :class:DictLikeNodeImage``
         """
-        
-        return [{'name':image.name, 'epoch':image.epoch} for image in self._list_snapshots(node)]
-    
+
+        return [
+            {"name": image.name, "epoch": image.epoch}
+            for image in self._list_snapshots(node)
+        ]
+
     def _ex_get_snapshot(self, node, name):
         """
         NEW 
@@ -189,8 +214,7 @@ class OpenStackNodeDriver(OpenStack_1_1_NodeDriver):
         for snap in self._list_snapshots(node):
             if snap.name == name:
                 return snap
-        
-    
+
     def _ex_get_size(self, id):
         """
         NEW 
@@ -204,21 +228,20 @@ class OpenStackNodeDriver(OpenStack_1_1_NodeDriver):
         for s in self.list_sizes():
             if s.id == id:
                 return s
-    
+
     def list_sizes(self, location=None):
         """
         RETRUN ALL FLAVORS/SIZES
         
         @overrides :class:`OpenStack_1_1_NodeDriver.ex_list_snapshots`
         """
-        sizes = self._to_sizes(
-            self.connection.request('/flavors/detail').object)
-        
+        sizes = self._to_sizes(self.connection.request("/flavors/detail").object)
+
         # make it compatible with libvirt_driver where vcpus are in extra
         for s in sizes:
-            s.extra['vcpus'] = s.vcpus
+            s.extra["vcpus"] = s.vcpus
         return sizes
-    
+
     def ex_rollback_snapshot(self, node, name):
         """
         Delete Old instance and use the current snapshot to create a new machine
@@ -232,13 +255,13 @@ class OpenStackNodeDriver(OpenStack_1_1_NodeDriver):
 
         :rtype: ``str``
         """
-        
+
         node = self.ex_get_node_details(node.id)
-        if node.state == self.NODE_STATE_MAP.get('PENDING'):
+        if node.state == self.NODE_STATE_MAP.get("PENDING"):
             raise Exception("Can't rollback a locked machine")
 
         snap = self._ex_get_snapshot(node, name)
-        size = self._ex_get_size( snap.extra['metadata']['instance_type_flavorid'])
+        size = self._ex_get_size(snap.extra["metadata"]["instance_type_flavorid"])
         if self.destroy_node(node):
             return self.create_node(name=node.name, image=snap, size=size).id
 
@@ -249,7 +272,7 @@ class OpenStackNodeDriver(OpenStack_1_1_NodeDriver):
         @replaces :class:`OpenStack_1_1_NodeDriver._to_snapshot`
         """
         return self._to_snapshot(data)
-    
+
     def _to_volume_snapshots(self, obj):
         """
         HELPER FUNCTION (NOT USED DIRECTLY)
@@ -257,7 +280,7 @@ class OpenStackNodeDriver(OpenStack_1_1_NodeDriver):
         @replaces :class:`OpenStack_1_1_NodeDriver._to_snapshots`
         """
         return self._to_snapshots(obj)
-    
+
     def ex_get_console_url(self, node, length=None):
         """
         Get console url
@@ -275,17 +298,14 @@ class OpenStackNodeDriver(OpenStack_1_1_NodeDriver):
         :rtype: ``dict``
         """
 
-        data = {
-            "os-getVNCConsole": {
-                "type": "novnc"
-            }
-        }
+        data = {"os-getVNCConsole": {"type": "novnc"}}
 
-        resp = self.connection.request('/servers/%s/action' % node.id,
-                                       method='POST', data=data).object
-        if resp and 'console' in resp:
-            return resp['console'].get('url')
-    
+        resp = self.connection.request(
+            "/servers/%s/action" % node.id, method="POST", data=data
+        ).object
+        if resp and "console" in resp:
+            return resp["console"].get("url")
+
     def ex_resume_node(self, node):
         """
         RESUME OPENSTACK NODE
@@ -323,10 +343,13 @@ class OpenStackNodeDriver(OpenStack_1_1_NodeDriver):
         """
         node = self.ex_get_node_details(node.id)
         # Only start in case of suspended or HALTED [both the same / check NODE_STATE_MAP]
-        if node.state in [self.NODE_STATE_MAP.get('SHUTOFF'), self.NODE_STATE_MAP.get('SUSPENDED')]:
-            return self.reboot_node(node) # HARD
+        if node.state in [
+            self.NODE_STATE_MAP.get("SHUTOFF"),
+            self.NODE_STATE_MAP.get("SUSPENDED"),
+        ]:
+            return self.reboot_node(node)  # HARD
         return False
-    
+
     # name is create_size to cope with the other call : list_sizes()
     def create_size(self, name, ram, vcpus, disk):
         """
@@ -350,20 +373,10 @@ class OpenStackNodeDriver(OpenStack_1_1_NodeDriver):
         
         :rtype: ``bool``
         """
-        
-        data = {
-            "flavor": {
-                "name": name,
-                "ram": ram,
-                "vcpus": vcpus,
-                "disk": disk
-            }
-        }
 
-        return self.connection.request('/flavors',
-                                       method='POST',
-                                       data=data).object
-    
+        data = {"flavor": {"name": name, "ram": ram, "vcpus": vcpus, "disk": disk}}
+
+        return self.connection.request("/flavors", method="POST", data=data).object
 
     # IS THER AWAY TO CREATE IMAGE FROM ANOTHER IMAGE IN OPENSTACK?
     def ex_create_template(self, node, name, imageid, snapshotbase=None):
@@ -385,9 +398,11 @@ class OpenStackNodeDriver(OpenStack_1_1_NodeDriver):
         
         :rtype: ``class: NodeImage``
         """
-        
-        return DictLikecNodeImage(self.create_image(node, name, {'image_type':'image'}))
-    
+
+        return DictLikecNodeImage(
+            self.create_image(node, name, {"image_type": "image"})
+        )
+
     # This is different from list_images that gets all images including snapshots
     def ex_list_images(self):
         """
@@ -402,13 +417,15 @@ class OpenStackNodeDriver(OpenStack_1_1_NodeDriver):
         """
         result = []
         for image in self.list_images():
-            if image.extra['metadata'].get('image_type') == 'snapshot':
+            if image.extra["metadata"].get("image_type") == "snapshot":
                 continue
             # make it compatible with libvirt driver as in cloudbroker extra['imagetype'] used
-            image.extra['imagetype'] = image.extra['metadata'].get('image_type', 'UNKNOWN')
+            image.extra["imagetype"] = image.extra["metadata"].get(
+                "image_type", "UNKNOWN"
+            )
             result.append(image)
         return result
-    
+
     def ex_stop_node(self, node):
         """
         NEW
@@ -421,7 +438,7 @@ class OpenStackNodeDriver(OpenStack_1_1_NodeDriver):
         :rtype: ``bool``
         """
         return self.ex_suspend_node(node)
-    
+
     def ex_snapshots_can_be_deleted_while_running(self):
         """
         NEW

@@ -1,4 +1,4 @@
-PUBLICINPUT = '''\
+PUBLICINPUT = """\
 # Allow dhcp client
 in_port={port},priority=8000,udp,tp_dst=67,dl_src={mac},idle_timeout=0,action=normal
 # Allow arp request/replies only specifically from that ip/mac combo
@@ -12,21 +12,21 @@ in_port={port},priority=6000,ip,dl_src={mac},nw_src={publicipv4addr}/32,idle_tim
 in_port={port},priority=100,action=drop
 # but for everything coming back, (or in, for that matter), allow
 priority=0,actions=normal
-'''
+"""
 
-CLEANUPFLOWS_CMD = '''\
+CLEANUPFLOWS_CMD = """\
 ovs-ofctl del-flows {bridge} "in_port={port}";
 ovs-ofctl del-flows {bridge} "dl_src={mac}";
 ovs-ofctl del-flows {bridge} "dl_dst={mac}";
-'''
+"""
 
-CLEANUPFLOWS_CMD_IP = '''\
+CLEANUPFLOWS_CMD_IP = """\
 ovs-ofctl del-flows {bridge} "ip,nw_src={ipaddress}";
 ovs-ofctl del-flows {bridge} "ip,nw_dst={ipaddress}";
 ovs-ofctl del-flows {bridge} "arp,nw_src={ipaddress}";
-'''
+"""
 
-GWMGMTINPUT = '''\
+GWMGMTINPUT = """\
 # drop network chatter
 table=0, priority=100,dl_src=01:00:00:00:00:00/01:00:00:00:00:00, actions=drop
 #allow arp
@@ -59,4 +59,4 @@ table=3, priority=300,ct_state=+new+trk,ip,dl_src={mac} actions=drop
 table=3, priority=200,ct_state=+new+trk,ip,dl_dst={mac}, actions=normal
 table=3, priority=200,ct_state=+est+trk,ip actions=normal
 
-'''
+"""
