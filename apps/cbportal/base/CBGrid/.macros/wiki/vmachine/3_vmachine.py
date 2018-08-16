@@ -60,11 +60,11 @@ def main(j, args, params, tags, tasklet):
     data = {'stats_image': 'N/A',
             'stats_parent_image': 'N/A',
             'stats_disk_size': '-1',
-            'stats_state': 'N/A',
             'stats_ping': 'N/A',
             'stats_hdtest': 'N/A',
             'stats_epoch': 'N/A',
             'snapshots': [],
+            'stats_state': 'N/A',
             'refreshed': False}
 
     try:
