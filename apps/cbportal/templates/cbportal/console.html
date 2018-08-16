@@ -1,24 +1,20 @@
 <div id="noVNC_screen">
-    <div id="noVNC_status_bar" class="noVNC_status_bar" style="margin-top: 0px;">
-        <table border=0 width="100%">
-            <tr>
-                <td>
-                    <div id="noVNC_status" style="position: relative; height: auto;">
-                    Loading
-                    </div>
-                </td>
-                <td width="1%">
-                    <div id="noVNC_buttons">
-                        <input type=button value="Send Text" id="sendTextInput">
-                        <input type=button value="Send CtrlAltDel" id="sendCtrlAltDelButton">
-                    </div>
-                </td>
-            </tr>
-        </table>
+    <div id="noVNC_status_bar" class="noVNC_status_bar">
+        <div id="noVNC_status">
+            Loading
+        </div>
+        <div>
+            <input class="btn btn-default" type=button value="Send Text" id="sendTextInput">
+            <input class="btn btn-default" type=button value="Send CtrlAltDel" id="sendCtrlAltDelButton">
+        </div>
     </div>
-    <canvas id="noVNC_canvas" width="640px" height="20px">
-        Canvas not supported.
-    </canvas>
+    <p>
+        <div>
+            <canvas id="noVNC_canvas" width="640px" height="20px">
+                Canvas not supported.
+            </canvas>
+        </div>
+    </p>
 </div>
 
 <script>
@@ -59,7 +55,7 @@ function passwordRequired(rfb) {
     msg += '<input type=password size=10 id="password_input" class="noVNC_status">';
     msg += '<\/form>';
     $D('noVNC_status_bar').setAttribute("class", "noVNC_status_warn");
-    $D('noVNC_status').innerHTML = msg;
+    $D('noVNC_status').innerHTML = "<strong>Status:</strong>" + msg;
 }
 function setPassword() {
     rfb.sendPassword($D('password_input').value);
@@ -89,6 +85,7 @@ function updateState(rfb, state, oldstate, msg) {
     if (typeof(msg) !== 'undefined') {
         sb.setAttribute("class", "noVNC_status_" + level);
         s.innerHTML = msg;
+        s.innerHTML = "<strong>Status: </strong>" + msg;
     }
 }
 
