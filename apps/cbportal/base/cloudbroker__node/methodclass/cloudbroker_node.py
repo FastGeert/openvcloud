@@ -99,6 +99,11 @@ class cloudbroker_node(BaseActor):
             j.apps.cloudbroker.computenode.enable(
                 stack["id"], node["gid"], message, **kwargs
             )
+            
+        gid = j.application.whoAmI.gid
+        self.cb.executeJumpscript(
+            "greenitglobe", "check_node_version", gid=gid, nid=node["id"]
+        )
 
     @auth(groups=["level2", "level3"])
     def decomission(self, nid, vmaction, **kwargs):
