@@ -20,10 +20,10 @@ timeout = 120
 order = 1
 enable = True
 async = True
-queue = 'process'
+queue = "process"
 log = False
 
-roles = ['master']
+roles = ["master"]
 
 
 def action(gid=None):
@@ -32,23 +32,28 @@ def action(gid=None):
     """
     import CloudscalerLibcloud
     import capnp
+
     agentcontroller = j.clients.agentcontroller.get()
     cbcl = j.clients.osis.getNamespace("cloudbroker")
     jobs = list()
 
     capnp.remove_import_hook()
-    schemapath = os.path.join(os.path.dirname(CloudscalerLibcloud.__file__), 'schemas')
-    resources_capnp = capnp.load(os.path.join(schemapath, 'resourcemonitoring.capnp'))
+    schemapath = os.path.join(os.path.dirname(CloudscalerLibcloud.__file__), "schemas")
+    resources_capnp = capnp.load(os.path.join(schemapath, "resourcemonitoring.capnp"))
 
     # schedule command
     for location in cbcl.location.search({})[1:]:
-        jobs.append(agentcontroller.scheduleCmd(cmdcategory="greenitglobe",
-                                                cmdname="collect_account_data",
-                                                nid=None,
-                                                timeout=60,
-                                                roles=['controller'],
-                                                gid=location["gid"],
-                                                wait=True))
+        jobs.append(
+            agentcontroller.scheduleCmd(
+                cmdcategory="greenitglobe",
+                cmdname="collect_account_data",
+                nid=None,
+                timeout=60,
+                roles=["controller"],
+                gid=location["gid"],
+                wait=True,
+            )
+        )
 
     # get return from each job.
     accounts = dict()
@@ -57,9 +62,11 @@ def action(gid=None):
 
         # read the tar.
         c = io.BytesIO()
-        if result['state'] != 'OK':
-            raise RuntimeError("Failed to collect account data from grid %s" % (job['gid']))
-        result_decoded = base64.decodestring(result['result'])
+        if result["state"] != "OK":
+            raise RuntimeError(
+                "Failed to collect account data from grid %s" % (job["gid"])
+            )
+        result_decoded = base64.decodestring(result["result"])
         c.write(result_decoded)
         c.seek(0)
         tar = tarfile.open(mode="r", fileobj=c)
@@ -67,10 +74,14 @@ def action(gid=None):
         for member in members:
             if member.name.endswith(".bin"):
                 accountid, year, month, day, hour = re.findall(
-                    "opt/jumpscale7/var/resourcetracking/active/([\d]+)/([\d]+)/([\d]+)/([\d]+)/([\d]+)/", member.name)[0]
+                    "opt/jumpscale7/var/resourcetracking/active/([\d]+)/([\d]+)/([\d]+)/([\d]+)/([\d]+)/",
+                    member.name,
+                )[0]
 
                 datekey = (year, month, day, hour)
-                accounts.setdefault(accountid, {datekey: []}).setdefault(datekey, []).append(member)
+                accounts.setdefault(accountid, {datekey: []}).setdefault(
+                    datekey, []
+                ).append(member)
 
     for account_id, dates in accounts.iteritems():
         for date, members in dates.iteritems():
@@ -84,19 +95,18 @@ def action(gid=None):
                 binary_content = tar.extractfile(member).read()
                 cloudspace_obj = resources_capnp.CloudSpace.from_bytes(binary_content)
                 cloudspaces[i] = cloudspace_obj
-                filepath = '/opt/jumpscale7/var/resourcetracking/%s/' % os.path.join(account_id,
-                                                                                     year,
-                                                                                     month,
-                                                                                     day,
-                                                                                     hour)
+                filepath = "/opt/jumpscale7/var/resourcetracking/%s/" % os.path.join(
+                    account_id, year, month, day, hour
+                )
                 try:
                     os.makedirs(filepath)
                 except OSError as err:
                     if err.errno != 17:
                         raise
 
-            with open(os.path.join(filepath, "account_capnp.bin"), 'w+b') as f:
+            with open(os.path.join(filepath, "account_capnp.bin"), "w+b") as f:
                 account.write(f)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     print(action())

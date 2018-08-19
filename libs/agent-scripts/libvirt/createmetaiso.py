@@ -18,17 +18,16 @@ def action(ovspath, metadata, userdata, type):
     from CloudscalerLibcloud.utils.iso import ISO
     from CloudscalerLibcloud import openvstorage
     import urlparse
+
     iso = ISO()
-    ovspath = ovspath.replace('://', ':').split('@')[0]
+    ovspath = ovspath.replace("://", ":").split("@")[0]
     iso.create_meta_iso(ovspath, metadata, userdata, type, volume_exists=True)
     return True
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     userdata = {
-        "chpasswd": {
-            "expire": False
-        },
+        "chpasswd": {"expire": False},
         "manage_etc_hosts": True,
         "password": "FxDsKJ4kS",
         "ssh_pwauth": True,
@@ -38,9 +37,9 @@ if __name__ == '__main__':
                 "name": "cloudscalers",
                 "plain_text_passwd": "FxDsKJ4kS",
                 "shell": "/bin/bash",
-                "sudo": "ALL=(ALL) ALL"
+                "sudo": "ALL=(ALL) ALL",
             }
-        ]
+        ],
     }
     metadata = {"local-hostname": "vm-9"}
-    print action('test', metadata, userdata, 'Linux')
+    print action("test", metadata, userdata, "Linux")

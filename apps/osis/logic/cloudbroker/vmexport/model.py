@@ -1,12 +1,13 @@
 from JumpScale import j
 
-OsisBaseObject=j.core.osis.getOSISBaseObjectComplexType()
+OsisBaseObject = j.core.osis.getOSISBaseObjectComplexType()
 
 from cloudbroker_vmexport_osismodelbase import cloudbroker_vmexport_osismodelbase
 
-#this class is meant to be overrided e.g. the getuniquekey, ...
+# this class is meant to be overrided e.g. the getuniquekey, ...
 
-class cloudbroker_vmexport(OsisBaseObject,cloudbroker_vmexport_osismodelbase):
+
+class cloudbroker_vmexport(OsisBaseObject, cloudbroker_vmexport_osismodelbase):
 
     """
     """
@@ -17,14 +18,12 @@ class cloudbroker_vmexport(OsisBaseObject,cloudbroker_vmexport_osismodelbase):
         if ddict <> {}:
             self.load(ddict)
 
-
     # def getContentKey(self):
     #     """
     #     this is used to define which fields make to update object in osis, e.g. not all fields are relevant for this and only when relevant ones change it will be stored in db
     #     """
     #     C="%s_%s_%s_%s_%s_%s_%s"%(self.gid,self.nid,self.id,self.name,self.mac,self.ipaddr,self.active)
     #     return j.tools.hash.md5_string(C)
-
 
     # def getUniqueKey(self):
     #     """
@@ -41,7 +40,7 @@ class cloudbroker_vmexport(OsisBaseObject,cloudbroker_vmexport_osismodelbase):
 
     #     # self.sguid=struct.pack("<HH",self.gid,self.id)
     #     self.guid = "%s_%s" % (self.gid, self.id)
-    #     self.lastcheck=j.base.time.getTimeEpoch() 
+    #     self.lastcheck=j.base.time.getTimeEpoch()
 
     #     return self.guid
 
@@ -50,5 +49,3 @@ class cloudbroker_vmexport(OsisBaseObject,cloudbroker_vmexport_osismodelbase):
     #     return dict which needs to be indexed
     #     """
     #     pass
-
-

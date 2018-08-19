@@ -12,18 +12,19 @@ category = "destroy.routeros"
 period = 0  # always in sec
 enable = True
 async = True
-queue = 'hypervisor'
+queue = "hypervisor"
 
 
 def action(networkid):
     from CloudscalerLibcloud.utils.network import Network
     import libvirt
+
     network = Network()
     try:
         con = network.libvirtutil.connection
         bridges = []
-        networkidHex = '%04x' % int(networkid)
-        name = 'routeros_%s' % networkidHex
+        networkidHex = "%04x" % int(networkid)
+        name = "routeros_%s" % networkidHex
 
         print("CLEANUP: %s/%s" % (networkid, networkidHex))
         dom = None
@@ -44,14 +45,19 @@ def action(networkid):
         network.libvirtutil.cleanupNetwork(networkid, bridges)
     finally:
         network.close()
-    destinationfile = '/var/lib/libvirt/images/routeros/{:04x}/routeros.qcow2'.format(networkid)
+    destinationfile = "/var/lib/libvirt/images/routeros/{:04x}/routeros.qcow2".format(
+        networkid
+    )
     if j.system.fs.exists(destinationfile):
         j.system.fs.remove(destinationfile)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('-netid', '--networkid', dest='netid', type=int, help='Network id to delete')
+    parser.add_argument(
+        "-netid", "--networkid", dest="netid", type=int, help="Network id to delete"
+    )
     options = parser.parse_args()
     action(options.netid)

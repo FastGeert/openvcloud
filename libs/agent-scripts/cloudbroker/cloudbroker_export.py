@@ -10,8 +10,8 @@ organization = "greenitglobe"
 author = "elawadim@greenitglobe.com"
 license = "bsd"
 version = "1.0"
-roles = ['storagedriver']
-queue = 'io'
+roles = ["storagedriver"]
+queue = "io"
 async = True
 timeout = 60 * 60 * 24
 
@@ -24,15 +24,18 @@ def action(link, username, passwd, path, envelope, disks):
     import threading
     from CloudscalerLibcloud import openvstorage
     from JumpScale.core.system.streamchunker import StreamChunker
-    basepath = os.path.join(link, path.strip('/'))
+
+    basepath = os.path.join(link, path.strip("/"))
     blocksize = 1024 * 1024
 
     def upload(rfd):
-        for idx, chunk in enumerate(StreamChunker(os.fdopen(rfd), chunksize=100 * 1024 ** 2)):
-            print('Adding chunk', idx)
-            url = '{}/export.ova.gz.{:09d}'.format(basepath, idx)
+        for idx, chunk in enumerate(
+            StreamChunker(os.fdopen(rfd), chunksize=100 * 1024 ** 2)
+        ):
+            print("Adding chunk", idx)
+            url = "{}/export.ova.gz.{:09d}".format(basepath, idx)
             requests.put(url, data=chunk, auth=(username, passwd))
-        print('Reached end')
+        print("Reached end")
 
     def reset(tarinfo):
         tarinfo.name = os.path.basename(tarinfo.name)
@@ -40,9 +43,9 @@ def action(link, username, passwd, path, envelope, disks):
 
     with openvstorage.TempStorage() as ts:
         vmdks = []
-        tmpvolname = 'disk-%i.vmdk'
+        tmpvolname = "disk-%i.vmdk"
         for i, disk in enumerate(disks):
-            print('Converting %s' % disk)
+            print("Converting %s" % disk)
             vmdk = os.path.join(ts.path, tmpvolname % i)
             openvstorage.exportVolume(disk, vmdk)
             vmdks.append(vmdk)
@@ -51,11 +54,11 @@ def action(link, username, passwd, path, envelope, disks):
         uploadthread = threading.Thread(target=upload, args=(rfd,))
         uploadthread.start()
 
-        wfile = os.fdopen(wfd, 'w', blocksize)
+        wfile = os.fdopen(wfd, "w", blocksize)
         try:
-            with tarfile.open(mode='w|gz', fileobj=wfile, bufsize=blocksize) as tar:
+            with tarfile.open(mode="w|gz", fileobj=wfile, bufsize=blocksize) as tar:
 
-                ti = tarfile.TarInfo('descriptor.ovf')
+                ti = tarfile.TarInfo("descriptor.ovf")
                 ti.size = len(envelope)
                 tar.addfile(ti, BytesIO(j.tools.text.toStr(envelope)))
                 for vmdk in vmdks:
@@ -67,11 +70,14 @@ def action(link, username, passwd, path, envelope, disks):
 
 if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('-u', '--user', default='admin')
-    parser.add_argument('-p', '--password', default='admin')
-    parser.add_argument('-d', '--disk')
-    parser.add_argument('-url', '--url')
-    parser.add_argument('-path', '--path')
+    parser.add_argument("-u", "--user", default="admin")
+    parser.add_argument("-p", "--password", default="admin")
+    parser.add_argument("-d", "--disk")
+    parser.add_argument("-url", "--url")
+    parser.add_argument("-path", "--path")
     options = parser.parse_args()
-    action(options.url, options.user, options.password, options.path, "xml", [options.disk])
+    action(
+        options.url, options.user, options.password, options.path, "xml", [options.disk]
+    )

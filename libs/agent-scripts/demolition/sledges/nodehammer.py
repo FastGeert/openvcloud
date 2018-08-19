@@ -11,15 +11,16 @@ license = "bsd"
 version = "1.0"
 roles = []
 async = True
-queue = 'process'
+queue = "process"
 
 
 def action():
-    with open('/proc/sys/kernel/sysrq','w') as f:
-        f.write('1')
-    with open('/proc/sysrq-trigger','w') as f:
-        f.write('o')
+    with open("/proc/sys/kernel/sysrq", "w") as f:
+        f.write("1")
+    with open("/proc/sysrq-trigger", "w") as f:
+        f.write("o")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     result = action()
     print result

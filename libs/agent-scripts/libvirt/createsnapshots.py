@@ -26,11 +26,12 @@ def action(ovs_connection, diskguids, name):
     # returns None
     snapshots = {}
 
-    ovs = j.clients.openvstorage.get(ips=ovs_connection['ips'],
-                                     credentials=(ovs_connection['client_id'],
-                                                  ovs_connection['client_secret']))
+    ovs = j.clients.openvstorage.get(
+        ips=ovs_connection["ips"],
+        credentials=(ovs_connection["client_id"], ovs_connection["client_secret"]),
+    )
 
-    path = '/vdisks/{}/create_snapshot'
+    path = "/vdisks/{}/create_snapshot"
     params = dict(name=name, sticky=True)
 
     for diskguid in diskguids:

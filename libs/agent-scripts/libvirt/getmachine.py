@@ -16,8 +16,6 @@ async = True
 
 def action(machineid):
     from CloudscalerLibcloud.utils.libvirtutil import LibvirtUtil
+
     connection = LibvirtUtil()
     return connection.get_domain(machineid)
-
-
-

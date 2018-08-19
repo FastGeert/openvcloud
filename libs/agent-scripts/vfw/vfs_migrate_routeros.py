@@ -12,7 +12,7 @@ category = "deploy.routeros"
 period = 0  # always in sec
 enable = True
 async = True
-queue = 'hypervisor'
+queue = "hypervisor"
 
 
 def action(networkid, sourceip, vlan, externalip):
@@ -21,25 +21,28 @@ def action(networkid, sourceip, vlan, externalip):
     import netaddr
     from xml.etree import ElementTree
     import re
+
     target_con = libvirt.open()
     try:
-        source_con = libvirt.open('qemu+ssh://%s/system' % sourceip)
+        source_con = libvirt.open("qemu+ssh://%s/system" % sourceip)
     except:
         source_con = None
     network = Network()
-    hrd = j.atyourservice.get(name='vfwnode', instance='main').hrd
+    hrd = j.atyourservice.get(name="vfwnode", instance="main").hrd
     netrange = hrd.get("instance.vfw.netrange.internal")
-    internalip = str(netaddr.IPAddress(netaddr.IPNetwork(netrange).first + int(networkid)))
+    internalip = str(
+        netaddr.IPAddress(netaddr.IPNetwork(netrange).first + int(networkid))
+    )
 
-    netinfo = [{'type': 'vlan', 'id': vlan}, {'type': 'vxlan', 'id': networkid}]
+    netinfo = [{"type": "vlan", "id": vlan}, {"type": "vxlan", "id": networkid}]
     extbridge = j.system.ovsnetconfig.getVlanBridge(vlan)
-    name = 'routeros_%04x' % networkid
+    name = "routeros_%04x" % networkid
 
     with NetworkTool(netinfo):
         if source_con:
-            templatepath = '/var/lib/libvirt/images/routeros/template/routeros.qcow2'
-            destination = '/var/lib/libvirt/images/routeros/{0:04x}'.format(networkid)
-            destinationfile = j.system.fs.joinPaths(destination, 'routeros.qcow2')
+            templatepath = "/var/lib/libvirt/images/routeros/template/routeros.qcow2"
+            destination = "/var/lib/libvirt/images/routeros/{0:04x}".format(networkid)
+            destinationfile = j.system.fs.joinPaths(destination, "routeros.qcow2")
             try:
                 domain = source_con.lookupByName(name)
             except libvirt.libvirtError:
@@ -53,14 +56,25 @@ def action(networkid, sourceip, vlan, externalip):
                     if not j.system.fs.exists(destinationfile):
                         j.system.fs.copyFile(templatepath, destinationfile)
                     xmldom = ElementTree.fromstring(domain.XMLDesc())
-                    seclabel = xmldom.find('seclabel')
+                    seclabel = xmldom.find("seclabel")
                     if seclabel is not None:
                         xmldom.remove(seclabel)
                     xml = ElementTree.tostring(xmldom)
-                    xml = re.sub(r"bridge='(public|ext-\w+)'", r"bridge='{}'".format(extbridge), xml)
-                    flags = libvirt.VIR_MIGRATE_LIVE | libvirt.VIR_MIGRATE_PERSIST_DEST | libvirt.VIR_MIGRATE_UNDEFINE_SOURCE | libvirt.VIR_MIGRATE_NON_SHARED_DISK
+                    xml = re.sub(
+                        r"bridge='(public|ext-\w+)'",
+                        r"bridge='{}'".format(extbridge),
+                        xml,
+                    )
+                    flags = (
+                        libvirt.VIR_MIGRATE_LIVE
+                        | libvirt.VIR_MIGRATE_PERSIST_DEST
+                        | libvirt.VIR_MIGRATE_UNDEFINE_SOURCE
+                        | libvirt.VIR_MIGRATE_NON_SHARED_DISK
+                    )
                     try:
-                        domain.migrate2(target_con, flags=flags, dxml=xml, uri=targeturl)
+                        domain.migrate2(
+                            target_con, flags=flags, dxml=xml, uri=targeturl
+                        )
                     except Exception as e:
                         try:
                             target_domain = target_con.lookupByName(name)
@@ -82,11 +96,12 @@ def action(networkid, sourceip, vlan, externalip):
             return False
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('-n', '--networkid', type=int)
-    parser.add_argument('-s', '--sourceip')
-    parser.add_argument('-v', '--vlan', type=int, default=0)
+    parser.add_argument("-n", "--networkid", type=int)
+    parser.add_argument("-s", "--sourceip")
+    parser.add_argument("-v", "--vlan", type=int, default=0)
     options = parser.parse_args()
     action(options.networkid, options.sourceip, options.vlan)

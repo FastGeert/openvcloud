@@ -10,9 +10,12 @@ organization = "greenitglobe"
 author = "deboeckj@greenitglobe.com"
 license = "bsd"
 version = "2.0"
-roles = ['master']
+roles = ["master"]
 async = True
 
+
 def action():
-    osis_cl = j.clients.osis.getNamespace('cloudbroker')
-    osis_cl.cloudspace.updateSearch({'privatenetwork': None}, {'$set': {'privatenetwork': '192.168.103.0/24'}})
+    osis_cl = j.clients.osis.getNamespace("cloudbroker")
+    osis_cl.cloudspace.updateSearch(
+        {"privatenetwork": None}, {"$set": {"privatenetwork": "192.168.103.0/24"}}
+    )

@@ -18,10 +18,10 @@ category = "account.monitoring"
 enable = True
 timeout = 60
 async = True
-queue = 'process'
+queue = "process"
 log = False
 
-roles = ['controller']
+roles = ["controller"]
 
 
 def action():
@@ -45,14 +45,27 @@ def action():
             for f in tar.getmembers():
                 if f.name.endswith(".bin"):
                     accountid, year, month, day, hour, name = re.findall(
-                        "opt/jumpscale7/var/resourcetracking/active/([\d]+)/([\d]+)/([\d]+)/([\d]+)/([\d]+)/([\d]+.bin)", f.name)[0]
+                        "opt/jumpscale7/var/resourcetracking/active/([\d]+)/([\d]+)/([\d]+)/([\d]+)/([\d]+)/([\d]+.bin)",
+                        f.name,
+                    )[0]
                     try:
-                        os.makedirs(os.path.join(base_path_collected, accountid, year, month, day, hour))
+                        os.makedirs(
+                            os.path.join(
+                                base_path_collected, accountid, year, month, day, hour
+                            )
+                        )
                     except OSError as err:
                         if err.errno != 17:
                             raise err
-                    os.rename(os.path.join(base_path_active, accountid, year, month, day, hour, name),
-                              os.path.join(base_path_collected, accountid, year, month, day, hour, name))
+                    os.rename(
+                        os.path.join(
+                            base_path_active, accountid, year, month, day, hour, name
+                        ),
+                        os.path.join(
+                            base_path_collected, accountid, year, month, day, hour, name
+                        ),
+                    )
+
     tar = create_hour_tar()
     move_to_collected(tar)
     tar.seek(0)
@@ -61,5 +74,5 @@ def action():
     return base64.encodestring(tar.getvalue())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     action()

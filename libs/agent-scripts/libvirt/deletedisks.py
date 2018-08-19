@@ -15,6 +15,7 @@ async = True
 
 def action(ovs_connection, diskguids):
     from JumpScale.lib.openvstorage.client import NotFoundException
+
     # Deletes every disk in diskguids
     #
     # ovs_connection: dict holding connection info for ovs restapi
@@ -23,9 +24,10 @@ def action(ovs_connection, diskguids):
     #
     # returns None
 
-    ovs = j.clients.openvstorage.get(ips=ovs_connection['ips'],
-                                     credentials=(ovs_connection['client_id'],
-                                                  ovs_connection['client_secret']))
+    ovs = j.clients.openvstorage.get(
+        ips=ovs_connection["ips"],
+        credentials=(ovs_connection["client_id"], ovs_connection["client_secret"]),
+    )
 
     taskguids = []
     for diskguid in diskguids:

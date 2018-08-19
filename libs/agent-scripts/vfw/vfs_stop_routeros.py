@@ -11,21 +11,25 @@ version = "1.0"
 category = "deploy.routeros"
 enable = True
 async = True
-queue = 'hypervisor'
+queue = "hypervisor"
+
 
 def action(networkid):
     import libvirt
     from CloudscalerLibcloud.utils.network import Network
     from CloudscalerLibcloud.utils.libvirtutil import LibvirtUtil
+
     libvirtutil = LibvirtUtil()
     network = Network(libvirtutil)
     bridges = []
 
     con = libvirtutil.connection
-    destination = '/var/lib/libvirt/images/routeros/{0:04x}/routeros.qcow2'.format(networkid)
+    destination = "/var/lib/libvirt/images/routeros/{0:04x}/routeros.qcow2".format(
+        networkid
+    )
     try:
-        network_id_hex = '%04x' % int(networkid)
-        name = 'routeros_%s' % network_id_hex
+        network_id_hex = "%04x" % int(networkid)
+        name = "routeros_%s" % network_id_hex
         try:
             domain = con.lookupByName(name)
             if domain:
@@ -44,11 +48,11 @@ def action(networkid):
         network.libvirtutil.cleanupNetwork(networkid, bridges)
         con.close()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('-n', '--networkid', type=int)
+    parser.add_argument("-n", "--networkid", type=int)
     options = parser.parse_args()
     action(options.networkid)
-
-

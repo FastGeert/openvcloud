@@ -10,36 +10,41 @@ from cloudbrokerlib import resourcestatus
 
 def _send_signup_mail(hrd, **kwargs):
     notifysupport = hrd.get("instance.openvcloud.cloudbroker.notifysupport")
-    toaddrs = [kwargs['email']]
+    toaddrs = [kwargs["email"]]
 
-    fromaddr = hrd.get('instance.openvcloud.supportemail')
-    if notifysupport == '1':
+    fromaddr = hrd.get("instance.openvcloud.supportemail")
+    if notifysupport == "1":
         toaddrs.append(fromaddr)
 
-    message = j.core.portal.active.templates.render('cbportal/email/account/created.html', **kwargs)
-    subject = j.core.portal.active.templates.render('cbportal/email/account/created.subject.txt', **kwargs)
+    message = j.core.portal.active.templates.render(
+        "cbportal/email/account/created.html", **kwargs
+    )
+    subject = j.core.portal.active.templates.render(
+        "cbportal/email/account/created.subject.txt", **kwargs
+    )
 
     j.clients.email.send(toaddrs, fromaddr, subject, message, files=None)
 
 
 class cloudbroker_account(BaseActor):
-
     def __init__(self):
         super(cloudbroker_account, self).__init__()
-        self.syscl = j.clients.osis.getNamespace('system')
+        self.syscl = j.clients.osis.getNamespace("system")
 
     def _checkAccount(self, accountId):
-        account = self.models.account.searchOne({'id': accountId})
+        account = self.models.account.searchOne({"id": accountId})
         if not account:
-            raise exceptions.NotFound('Account not found')
+            raise exceptions.NotFound("Account not found")
 
-        if account['status'] == resourcestatus.Account.DESTROYED:
-            raise exceptions.BadRequest('Specified account is destroyed')
+        if account["status"] == resourcestatus.Account.DESTROYED:
+            raise exceptions.BadRequest("Specified account is destroyed")
 
         return account
 
-    @auth(groups=['level1', 'level2', 'level3'])
-    @async('Disabling Account', 'Finished disabling account', 'Failed to disable account')
+    @auth(groups=["level1", "level2", "level3"])
+    @async(
+        "Disabling Account", "Finished disabling account", "Failed to disable account"
+    )
     def disable(self, accountId, reason, **kwargs):
         """
         Disable an account
@@ -48,88 +53,119 @@ class cloudbroker_account(BaseActor):
         result
         """
         account = self._checkAccount(accountId)
-        account['deactivationTime'] = time.time()
-        account['status'] = resourcestatus.Account.DISABLED
+        account["deactivationTime"] = time.time()
+        account["status"] = resourcestatus.Account.DISABLED
         self.models.account.set(account)
         # stop all account's machines
-        cloudspaces = self.models.cloudspace.search({'accountId': account['id']})[1:]
+        cloudspaces = self.models.cloudspace.search({"accountId": account["id"]})[1:]
         for cs in cloudspaces:
-            vmachines = self.models.vmachine.search({'cloudspaceId': cs['id'],
-                                                     'status': {'$in': resourcestatus.Machine.UP_STATES}
-                                                     })[1:]
+            vmachines = self.models.vmachine.search(
+                {
+                    "cloudspaceId": cs["id"],
+                    "status": {"$in": resourcestatus.Machine.UP_STATES},
+                }
+            )[1:]
             for vmachine in vmachines:
-                j.apps.cloudapi.machines.stop(machineId=vmachine['id'])
+                j.apps.cloudapi.machines.stop(machineId=vmachine["id"])
         return True
 
-    @auth(groups=['level1', 'level2', 'level3'])
-    def create(self, name, username, emailaddress, maxMemoryCapacity=-1,
-               maxVDiskCapacity=-1, maxCPUCapacity=-1, maxNetworkPeerTransfer=-1, maxNumPublicIP=-1, sendAccessEmails=True, **kwargs):
+    @auth(groups=["level1", "level2", "level3"])
+    def create(
+        self,
+        name,
+        username,
+        emailaddress,
+        maxMemoryCapacity=-1,
+        maxVDiskCapacity=-1,
+        maxCPUCapacity=-1,
+        maxNetworkPeerTransfer=-1,
+        maxNumPublicIP=-1,
+        sendAccessEmails=True,
+        **kwargs
+    ):
 
         with self.models.account.lock(name):
             if sendAccessEmails == 1:
                 sendAccessEmails = True
             elif sendAccessEmails == 0:
                 sendAccessEmails = False
-            accounts = self.models.account.search({'name': name, 'status': {'$ne': resourcestatus.Account.DESTROYED}})[1:]
+            accounts = self.models.account.search(
+                {"name": name, "status": {"$ne": resourcestatus.Account.DESTROYED}}
+            )[1:]
             if accounts:
-                raise exceptions.Conflict('Account name is already in use.')
+                raise exceptions.Conflict("Account name is already in use.")
 
             if j.core.portal.active.auth.userExists(username):
-                if emailaddress and not self.syscl.user.search({'id': username,
-                                                                'emails': emailaddress})[1:]:
-                    raise exceptions.Conflict('The specified username and email do not match.')
+                if (
+                    emailaddress
+                    and not self.syscl.user.search(
+                        {"id": username, "emails": emailaddress}
+                    )[1:]
+                ):
+                    raise exceptions.Conflict(
+                        "The specified username and email do not match."
+                    )
 
                 user = j.core.portal.active.auth.getUserInfo(username)
                 emailaddress = user.emails[0] if user.emails else None
             else:
                 if not emailaddress:
-                    raise exceptions.BadRequest('Email address is required for new users.')
+                    raise exceptions.BadRequest(
+                        "Email address is required for new users."
+                    )
                 Validators.EMAIL(emailaddress)
 
                 password = j.base.idgenerator.generateGUID()
-                j.apps.cloudbroker.user.create(username=username, emailaddress=[emailaddress], password=password, groups=['user'])
+                j.apps.cloudbroker.user.create(
+                    username=username,
+                    emailaddress=[emailaddress],
+                    password=password,
+                    groups=["user"],
+                )
 
             now = int(time.time())
-            locationurl = j.apps.cloudapi.locations.getUrl().strip('/')
+            locationurl = j.apps.cloudapi.locations.getUrl().strip("/")
 
             account = self.models.account.new()
             account.name = name
             account.creationTime = now
             account.updateTime = now
-            account.company = ''
-            account.companyurl = ''
+            account.company = ""
+            account.companyurl = ""
             account.status = resourcestatus.Account.CONFIRMED
             account.sendAccessEmails = sendAccessEmails
 
-            resourcelimits = {'CU_M': maxMemoryCapacity,
-                            'CU_D': maxVDiskCapacity,
-                            'CU_C': maxCPUCapacity,
-                            'CU_NP': maxNetworkPeerTransfer,
-                            'CU_I': maxNumPublicIP}
+            resourcelimits = {
+                "CU_M": maxMemoryCapacity,
+                "CU_D": maxVDiskCapacity,
+                "CU_C": maxCPUCapacity,
+                "CU_NP": maxNetworkPeerTransfer,
+                "CU_I": maxNumPublicIP,
+            }
             self.cb.fillResourceLimits(resourcelimits)
             account.resourceLimits = resourcelimits
 
             ace = account.new_acl()
             ace.userGroupId = username
-            ace.type = 'U'
-            ace.right = 'CXDRAU'
-            ace.status = 'CONFIRMED'
+            ace.type = "U"
+            ace.right = "CXDRAU"
+            ace.status = "CONFIRMED"
             accountid = self.models.account.set(account)[0]
 
             mail_args = {
-                'account': name,
-                'username': username,
-                'email': emailaddress,
-                'portalurl': locationurl
+                "account": name,
+                "username": username,
+                "email": emailaddress,
+                "portalurl": locationurl,
             }
-            kwargs['ctx'].env['tags'] += " accountId:{}".format(accountid)
+            kwargs["ctx"].env["tags"] += " accountId:{}".format(accountid)
 
             if emailaddress:
                 _send_signup_mail(hrd=self.hrd, **mail_args)
 
             return accountid
 
-    @auth(groups=['level1', 'level2', 'level3'])
+    @auth(groups=["level1", "level2", "level3"])
     def enable(self, accountId, reason, **kwargs):
         """
         Enable an account
@@ -138,16 +174,26 @@ class cloudbroker_account(BaseActor):
         result
         """
         account = self._checkAccount(accountId)
-        if account['status'] != resourcestatus.Account.DISABLED:
-            raise exceptions.BadRequest('Account is not disabled')
+        if account["status"] != resourcestatus.Account.DISABLED:
+            raise exceptions.BadRequest("Account is not disabled")
 
-        account['status'] = resourcestatus.Account.CONFIRMED
+        account["status"] = resourcestatus.Account.CONFIRMED
         self.models.account.set(account)
         return True
 
-    @auth(groups=['level1', 'level2', 'level3'])
-    def update(self, accountId, name, maxMemoryCapacity, maxVDiskCapacity, maxCPUCapacity,
-               maxNetworkPeerTransfer, maxNumPublicIP, sendAccessEmails, **kwargs):
+    @auth(groups=["level1", "level2", "level3"])
+    def update(
+        self,
+        accountId,
+        name,
+        maxMemoryCapacity,
+        maxVDiskCapacity,
+        maxCPUCapacity,
+        maxNetworkPeerTransfer,
+        maxNumPublicIP,
+        sendAccessEmails,
+        **kwargs
+    ):
         """
         Update an account name or the maximum cloud units set on it
         Setting a cloud unit maximum to -1 will not put any restrictions on the resource
@@ -169,23 +215,32 @@ class cloudbroker_account(BaseActor):
         elif sendAccessEmails == 0:
             sendAccessEmails = False
 
-        resourcelimits = {'CU_M': maxMemoryCapacity,
-                          'CU_D': maxVDiskCapacity,
-                          'CU_C': maxCPUCapacity,
-                          'CU_NP': maxNetworkPeerTransfer,
-                          'CU_I': maxNumPublicIP}
+        resourcelimits = {
+            "CU_M": maxMemoryCapacity,
+            "CU_D": maxVDiskCapacity,
+            "CU_C": maxCPUCapacity,
+            "CU_NP": maxNetworkPeerTransfer,
+            "CU_I": maxNumPublicIP,
+        }
         self.cb.fillResourceLimits(resourcelimits)
-        maxMemoryCapacity = resourcelimits['CU_M']
-        maxVDiskCapacity = resourcelimits['CU_D']
-        maxCPUCapacity = resourcelimits['CU_C']
-        maxNetworkPeerTransfer = resourcelimits['CU_NP']
-        maxNumPublicIP = resourcelimits['CU_I']
+        maxMemoryCapacity = resourcelimits["CU_M"]
+        maxVDiskCapacity = resourcelimits["CU_D"]
+        maxCPUCapacity = resourcelimits["CU_C"]
+        maxNetworkPeerTransfer = resourcelimits["CU_NP"]
+        maxNumPublicIP = resourcelimits["CU_I"]
 
-        return j.apps.cloudapi.accounts.update(accountId=accountId, name=name, maxMemoryCapacity=maxMemoryCapacity,
-                                                       maxVDiskCapacity=maxVDiskCapacity, maxCPUCapacity=maxCPUCapacity, maxNetworkPeerTransfer=maxNetworkPeerTransfer,
-                                                       maxNumPublicIP=maxNumPublicIP, sendAccessEmails=sendAccessEmails)
+        return j.apps.cloudapi.accounts.update(
+            accountId=accountId,
+            name=name,
+            maxMemoryCapacity=maxMemoryCapacity,
+            maxVDiskCapacity=maxVDiskCapacity,
+            maxCPUCapacity=maxCPUCapacity,
+            maxNetworkPeerTransfer=maxNetworkPeerTransfer,
+            maxNumPublicIP=maxNumPublicIP,
+            sendAccessEmails=sendAccessEmails,
+        )
 
-    @auth(groups=['level1', 'level2', 'level3'])
+    @auth(groups=["level1", "level2", "level3"])
     def delete(self, accountId, reason, permanently=False, name=None, **kwargs):
         """
         Complete delete an account from the system
@@ -195,40 +250,54 @@ class cloudbroker_account(BaseActor):
         except (exceptions.BadRequest, exceptions.NotFound):
             return
 
-        if name and account['name'] != name:
-            raise exceptions.BadRequest('Incorrect account name specified')
+        if name and account["name"] != name:
+            raise exceptions.BadRequest("Incorrect account name specified")
 
-        startstate = account['status']
+        startstate = account["status"]
 
         def restorestate(eco):
             account = self.models.account.get(accountId)
             account.status = startstate
             self.models.account.set(account)
 
-        ctx = kwargs['ctx']
-        ctx.events.runAsync(self._delete,
-                            (accountId, reason, permanently, kwargs['ctx']),
-                            {},
-                            'Deleting Account %(name)s' % account,
-                            'Finished deleting Account',
-                            'Failed to delete Account',
-                            errorcb=restorestate)
+        ctx = kwargs["ctx"]
+        ctx.events.runAsync(
+            self._delete,
+            (accountId, reason, permanently, kwargs["ctx"]),
+            {},
+            "Deleting Account %(name)s" % account,
+            "Finished deleting Account",
+            "Failed to delete Account",
+            errorcb=restorestate,
+        )
 
     def _delete(self, accountId, reason, permanently, ctx):
         account = self.models.account.get(accountId)
-        title = 'Deleting Account %s' % account.name
+        title = "Deleting Account %s" % account.name
         account.status = resourcestatus.Account.DESTROYING
         self.models.account.set(account)
-        query = {'accountId': accountId, 'status': {'$ne': resourcestatus.Cloudspace.DESTROYED}}
+        query = {
+            "accountId": accountId,
+            "status": {"$ne": resourcestatus.Cloudspace.DESTROYED},
+        }
 
         # first delete all images and dependant vms
-        images = self.models.image.search({'accountId': accountId})[1:]
+        images = self.models.image.search({"accountId": accountId})[1:]
         for image in images:
-            ctx.events.sendMessage(title, 'Deleting Image %(name)s' % image)
-            for vm in self.models.vmachine.search({'imageId': image['id'], 'status': {'$ne': resourcestatus.Machine.DESTROYED}})[1:]:
-                ctx.events.sendMessage(title, 'Deleting dependant Virtual Machine %(name)s' % image)
-                j.apps.cloudbroker.machine.destroy(vm['id'], reason, permanently)
-            j.apps.cloudapi.images.delete(imageId=image['id'], permanently=permanently, ctx=ctx)
+            ctx.events.sendMessage(title, "Deleting Image %(name)s" % image)
+            for vm in self.models.vmachine.search(
+                {
+                    "imageId": image["id"],
+                    "status": {"$ne": resourcestatus.Machine.DESTROYED},
+                }
+            )[1:]:
+                ctx.events.sendMessage(
+                    title, "Deleting dependant Virtual Machine %(name)s" % image
+                )
+                j.apps.cloudbroker.machine.destroy(vm["id"], reason, permanently)
+            j.apps.cloudapi.images.delete(
+                imageId=image["id"], permanently=permanently, ctx=ctx
+            )
         cloudspaces = self.models.cloudspace.search(query)[1:]
         for cloudspace in cloudspaces:
             j.apps.cloudbroker.cloudspace._destroy(cloudspace, reason, permanently, ctx)
@@ -241,52 +310,73 @@ class cloudbroker_account(BaseActor):
         self.models.account.set(account)
         return True
 
-    @auth(groups=['level1', 'level2', 'level3'])
+    @auth(groups=["level1", "level2", "level3"])
     def restore(self, accountId, reason, **kwargs):
         account = self._checkAccount(accountId)
-        if account['status'] != resourcestatus.Account.DELETED:
-            raise exceptions.BadRequest('Can only restore a deleted account')
-        ctx = kwargs['ctx']
-        ctx.events.runAsync(self._restore,
-                            (account, reason, ctx),
-                            {},
-                            'Restoring Account %(name)s' % account,
-                            'Finished restoring Account',
-                            'Failed to restore Account')
+        if account["status"] != resourcestatus.Account.DELETED:
+            raise exceptions.BadRequest("Can only restore a deleted account")
+        ctx = kwargs["ctx"]
+        ctx.events.runAsync(
+            self._restore,
+            (account, reason, ctx),
+            {},
+            "Restoring Account %(name)s" % account,
+            "Finished restoring Account",
+            "Failed to restore Account",
+        )
 
     def _restore(self, account, reason, ctx):
-        images = self.models.image.search({'accountId': account['id']})[1:]
-        query = {'accountId': account['id'], 'status': {'$ne': resourcestatus.Cloudspace.DESTROYED}}
+        images = self.models.image.search({"accountId": account["id"]})[1:]
+        query = {
+            "accountId": account["id"],
+            "status": {"$ne": resourcestatus.Cloudspace.DESTROYED},
+        }
         cloudspaces = self.models.cloudspace.search(query)[1:]
-        title = 'Restoring Account %(name)s' % account
+        title = "Restoring Account %(name)s" % account
         for idx, image in enumerate(images):
-            ctx.events.sendMessage(title, 'Restoring image %s/%s' % (idx + 1, len(images)))
-            j.apps.cloudapi.images.restore(image['id'], imgrestore='')
+            ctx.events.sendMessage(
+                title, "Restoring image %s/%s" % (idx + 1, len(images))
+            )
+            j.apps.cloudapi.images.restore(image["id"], imgrestore="")
         for idx, cloudspace in enumerate(cloudspaces):
-            ctx.events.sendMessage(title, 'Restoring Cloud Space %s/%s' % (idx + 1, len(cloudspaces)))
-            j.apps.cloudapi.cloudspaces.restore(cloudspace['id'], reason, ctx=ctx, accrestore="")
+            ctx.events.sendMessage(
+                title, "Restoring Cloud Space %s/%s" % (idx + 1, len(cloudspaces))
+            )
+            j.apps.cloudapi.cloudspaces.restore(
+                cloudspace["id"], reason, ctx=ctx, accrestore=""
+            )
 
-        self.models.account.updateSearch({'id': account['id']}, {'$set': {'status': resourcestatus.Account.CONFIRMED, 'updateTime': int(time.time())}})
+        self.models.account.updateSearch(
+            {"id": account["id"]},
+            {
+                "$set": {
+                    "status": resourcestatus.Account.CONFIRMED,
+                    "updateTime": int(time.time()),
+                }
+            },
+        )
         return True
 
-    @auth(groups=['level3'])
+    @auth(groups=["level3"])
     def deleteAccounts(self, accountIds, reason, permanently=False, **kwargs):
         """
         Destroys accounts
         """
-        ctx = kwargs['ctx']
-        ctx.events.runAsync(self._deleteAccounts,
-                            args=(accountIds, reason, permanently, ctx),
-                            kwargs={},
-                            title='Destroying Accounts',
-                            success='Finished destroying Accounts',
-                            error='Failed to destroy Accounts')
+        ctx = kwargs["ctx"]
+        ctx.events.runAsync(
+            self._deleteAccounts,
+            args=(accountIds, reason, permanently, ctx),
+            kwargs={},
+            title="Destroying Accounts",
+            success="Finished destroying Accounts",
+            error="Failed to destroy Accounts",
+        )
 
     def _deleteAccounts(self, accountIds, reason, permanently, ctx):
         for accountId in accountIds:
             self._delete(accountId, reason, permanently, ctx)
 
-    @auth(groups=['level1', 'level2', 'level3'])
+    @auth(groups=["level1", "level2", "level3"])
     def addUser(self, accountId, username, accesstype, **kwargs):
         """
         Give a user access rights.
@@ -299,23 +389,27 @@ class cloudbroker_account(BaseActor):
         self._checkAccount(accountId)
         user = self.cb.checkUser(username, activeonly=False)
         if user:
-            j.apps.cloudapi.accounts.addUser(accountId=accountId, userId=username, accesstype=accesstype)
+            j.apps.cloudapi.accounts.addUser(
+                accountId=accountId, userId=username, accesstype=accesstype
+            )
         else:
-            raise exceptions.NotFound('User with username %s is not found' % username)
+            raise exceptions.NotFound("User with username %s is not found" % username)
         return True
 
-    @auth(groups=['level1', 'level2', 'level3'])
+    @auth(groups=["level1", "level2", "level3"])
     def deleteUser(self, accountId, username, recursivedelete, **kwargs):
         """
         Delete a user from the account
         """
         account = self._checkAccount(accountId)
-        accountId = account['id']
+        accountId = account["id"]
         user = self.cb.checkUser(username)
         if user:
-            userId = user['id']
+            userId = user["id"]
         else:
             # external user, delete ACE that was added using emailaddress
             userId = username
-        j.apps.cloudapi.accounts.deleteUser(accountId=accountId, userId=userId, recursivedelete=recursivedelete)
+        j.apps.cloudapi.accounts.deleteUser(
+            accountId=accountId, userId=userId, recursivedelete=recursivedelete
+        )
         return True

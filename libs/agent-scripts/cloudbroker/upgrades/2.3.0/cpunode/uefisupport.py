@@ -11,12 +11,13 @@ organization = "greenitglobe"
 author = "deboeckj@greenitglobe.com"
 license = "bsd"
 version = "2.0"
-roles = ['cpunode']
+roles = ["cpunode"]
 async = True
 
 
 def action():
-    j.system.platform.ubuntu.install('ovmf')
+    j.system.platform.ubuntu.install("ovmf")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     print(action())

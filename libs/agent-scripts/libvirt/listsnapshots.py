@@ -26,25 +26,35 @@ def action(ovs_connection, diskguids):
     # returns list of dicts with name snapshot combinations
     #  eg: [{'name': 'ultimate', 'timestamp': 1368774635484}, ...]
 
-    ovs = j.clients.openvstorage.get(ips=ovs_connection['ips'],
-                                     credentials=(ovs_connection['client_id'],
-                                                  ovs_connection['client_secret']))
-    path = '/vdisks/{}'
+    ovs = j.clients.openvstorage.get(
+        ips=ovs_connection["ips"],
+        credentials=(ovs_connection["client_id"], ovs_connection["client_secret"]),
+    )
+    path = "/vdisks/{}"
 
     for diskguid in diskguids:
         job = gevent.spawn(ovs.get, path.format(diskguid))
-
-
 
     jobs = [gevent.spawn(ovs.get, path.format(diskguid)) for diskguid in diskguids]
     gevent.joinall(jobs)
     snapshots = set()
     for job in jobs:
         diskinfo = job.get()
-        for snapshot in diskinfo['snapshots']:
-            if snapshot['is_automatic']:
+        for snapshot in diskinfo["snapshots"]:
+            if snapshot["is_automatic"]:
                 continue
-            snapshots.add((diskinfo['guid'], snapshot['label'], int(snapshot['timestamp']), snapshot['guid']))
+            snapshots.add(
+                (
+                    diskinfo["guid"],
+                    snapshot["label"],
+                    int(snapshot["timestamp"]),
+                    snapshot["guid"],
+                )
+            )
 
-
-    return [dict(diskguid=snapshot[0], name=snapshot[1], epoch=snapshot[2], guid=snapshot[3]) for snapshot in snapshots]
+    return [
+        dict(
+            diskguid=snapshot[0], name=snapshot[1], epoch=snapshot[2], guid=snapshot[3]
+        )
+        for snapshot in snapshots
+    ]

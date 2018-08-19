@@ -15,15 +15,17 @@ async = True
 
 def action(fwobject):
     from StringIO import StringIO
-    host = fwobject['host']
-    username = fwobject['username']
-    password = fwobject['password']
+
+    host = fwobject["host"]
+    username = fwobject["username"]
+    password = fwobject["password"]
 
     ro = j.clients.routeros.get(host, username, password)
     fp = StringIO()
-    ro.download('ca.crt', fp)
+    ro.download("ca.crt", fp)
     ca = fp.getvalue()
-    config = """\
+    config = (
+        """\
 client
 remote %s
 port 1194
@@ -38,15 +40,15 @@ persist-tun
 ca ca.crt
 tls-cipher DEFAULT
 auth-user-pass credentials
-    """ % fwobject['pubips'][0]
+    """
+        % fwobject["pubips"][0]
+    )
 
     credentials = """\
 vpn
 %s
-""" % j.tools.hash.sha1_string(ca)
+""" % j.tools.hash.sha1_string(
+        ca
+    )
 
-    return {'ca.crt': ca,
-            'credentials': credentials,
-            'openvpn.ovpn': config}
-
-
+    return {"ca.crt": ca, "credentials": credentials, "openvpn.ovpn": config}

@@ -12,11 +12,12 @@ license = "bsd"
 version = "1.0"
 roles = []
 async = True
-queue = 'hypervisor'
+queue = "hypervisor"
 
 
 def action(xml, domainid):
     from CloudscalerLibcloud.utils.libvirtutil import LibvirtUtil
+
     connection = LibvirtUtil()
     domain = connection._get_domain(domainid)
     if domain:

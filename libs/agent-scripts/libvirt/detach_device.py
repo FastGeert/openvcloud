@@ -16,6 +16,7 @@ async = True
 def action(xml, machineid):
     import libvirt
     from CloudscalerLibcloud.utils.libvirtutil import LibvirtUtil
+
     connection = LibvirtUtil()
     try:
         domain = connection.connection.lookupByUUIDString(machineid)
@@ -29,6 +30,3 @@ def action(xml, machineid):
     if flags != 0:
         domain.detachDeviceFlags(xml, flags)
     return domain.XMLDesc()
-
-
-

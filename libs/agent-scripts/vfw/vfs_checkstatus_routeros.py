@@ -11,14 +11,16 @@ version = "1.0"
 category = "deploy.routeros"
 enable = True
 async = True
-queue = 'hypervisor'
+queue = "hypervisor"
+
 
 def action(networkid):
     import libvirt
+
     con = libvirt.open()
     try:
-        networkidHex = '%04x' % int(networkid)
-        name = 'routeros_%s' % networkidHex
+        networkidHex = "%04x" % int(networkid)
+        name = "routeros_%s" % networkidHex
         try:
             domain = con.lookupByName(name)
             if domain.state()[0] == libvirt.VIR_DOMAIN_RUNNING:
@@ -30,5 +32,3 @@ def action(networkid):
     finally:
         con.close()
     return True
-
-

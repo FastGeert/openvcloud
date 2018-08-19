@@ -9,11 +9,11 @@ organization = "greenitglobe"
 author = "deboeckj@codescalers.com"
 license = "bsd"
 version = "1.0"
-roles = ['storagedriver']
+roles = ["storagedriver"]
 async = True
 
 
 def action():
     from CloudscalerLibcloud import openvstorage
-    return openvstorage.getEdgeconnection()
 
+    return openvstorage.getEdgeconnection()

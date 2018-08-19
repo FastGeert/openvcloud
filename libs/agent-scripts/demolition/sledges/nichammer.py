@@ -11,12 +11,13 @@ license = "bsd"
 version = "1.0"
 roles = []
 async = True
-queue = 'process'
+queue = "process"
 
 
 def action():
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     result = action()
     print result

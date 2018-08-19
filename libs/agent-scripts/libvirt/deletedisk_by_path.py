@@ -25,24 +25,27 @@ def action(ovs_connection, diskpath):
     #
     # returns None
 
-    ovs = j.clients.openvstorage.get(ips=ovs_connection['ips'],
-                                     credentials=(ovs_connection['client_id'],
-                                                  ovs_connection['client_secret']))
+    ovs = j.clients.openvstorage.get(
+        ips=ovs_connection["ips"],
+        credentials=(ovs_connection["client_id"], ovs_connection["client_secret"]),
+    )
 
     pr = urlparse.urlparse(diskpath)
     devicename = pr.path
 
     # First query for the diskguid
-    query = dict(type='AND', items=[('devicename', 'EQUALS', devicename)])
-    result = ovs.get('/vdisks', params=dict(contents='name,devicename', query=json.dumps(query)))
-    disksfound = len(result['data'])
+    query = dict(type="AND", items=[("devicename", "EQUALS", devicename)])
+    result = ovs.get(
+        "/vdisks", params=dict(contents="name,devicename", query=json.dumps(query))
+    )
+    disksfound = len(result["data"])
     if disksfound == 0:
         return False
     elif disksfound > 1:
-        raise Exception('More than 1 disk found. Do not know what to do.')
+        raise Exception("More than 1 disk found. Do not know what to do.")
 
     # Then delete the disk
-    diskguid = result['data'][0]['guid']
+    diskguid = result["data"][0]["guid"]
     taskguid = ovs.delete("/vdisks/{}".format(diskguid))
     success, result = ovs.wait_for_task(taskguid)
     if not success:
@@ -50,11 +53,13 @@ def action(ovs_connection, diskpath):
 
     return True
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p', '--path')
+    parser.add_argument("-p", "--path")
     options = parser.parse_args()
-    scl = j.clients.osis.getNamespace('system')
-    ovs_connection = scl.grid.get(j.application.whoAmI.gid).settings['ovs_credentials']
+    scl = j.clients.osis.getNamespace("system")
+    ovs_connection = scl.grid.get(j.application.whoAmI.gid).settings["ovs_credentials"]
     print(action(ovs_connection, options.path))

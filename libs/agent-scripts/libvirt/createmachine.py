@@ -12,11 +12,12 @@ license = "bsd"
 version = "1.0"
 roles = []
 async = True
-queue = 'hypervisor'
+queue = "hypervisor"
 
 
 def action(machinexml, vmlog_dir, netinfo):
     from CloudscalerLibcloud.utils.network import NetworkTool
+
     j.system.fs.createDir(vmlog_dir)
     with NetworkTool(netinfo) as net:
         if not net.connection.check_machine(machinexml):

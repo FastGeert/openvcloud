@@ -8,11 +8,11 @@ parser.add_option("-i", "--address", dest="address", help="ip address")
 (options, args) = parser.parse_args()
 
 if options.cluster is None:
-	print '[-] missing cluster name'
-	j.application.stop()
+    print "[-] missing cluster name"
+    j.application.stop()
 
 if options.address is None:
-	print '[-] missing address'
-	j.application.stop()
+    print "[-] missing address"
+    j.application.stop()
 
 ArakoonInstaller.restart_cluster(options.cluster, options.address)

@@ -16,7 +16,6 @@ queue = "io"
 async = True
 
 
-
 def action(domainid, temppath, name, storageparameters):
     import ujson, time
     from JumpScale.lib.backuptools import object_store
@@ -25,15 +24,20 @@ def action(domainid, temppath, name, storageparameters):
     from CloudscalerLibcloud.utils.qcow2 import Qcow2
 
     connection = LibvirtUtil()
-    store = object_store.ObjectStore(storageparameters['storage_type'])
-    bucketname = storageparameters['bucket']
-    mdbucketname = storageparameters['mdbucketname']
+    store = object_store.ObjectStore(storageparameters["storage_type"])
+    bucketname = storageparameters["bucket"]
+    mdbucketname = storageparameters["mdbucketname"]
     domain = connection.connection.lookupByUUIDString(domainid)
     files = connection._getDomainDiskFiles(domain)
-    if storageparameters['storage_type'] == 'S3':
-        store.conn.connect(storageparameters['aws_access_key'], storageparameters['aws_secret_key'], storageparameters['host'], is_secure=storageparameters['is_secure'])
+    if storageparameters["storage_type"] == "S3":
+        store.conn.connect(
+            storageparameters["aws_access_key"],
+            storageparameters["aws_secret_key"],
+            storageparameters["host"],
+            is_secure=storageparameters["is_secure"],
+        )
     else:
-        #rados has config on local cpu node
+        # rados has config on local cpu node
         store.conn.connect()
     backupmetadata = []
     if not j.system.fs.exists(temppath):
@@ -46,5 +50,5 @@ def action(domainid, temppath, name, storageparameters):
         metadata = backup.backup(store, bucketname, tempfilepath)
         j.system.fs.remove(tempfilepath)
         backupmetadata.append(metadata)
-    backup.store_metadata(store, mdbucketname, name,backupmetadata)
-    return {'files':backupmetadata, 'timestamp':time.time()}
+    backup.store_metadata(store, mdbucketname, name, backupmetadata)
+    return {"files": backupmetadata, "timestamp": time.time()}

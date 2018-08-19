@@ -15,11 +15,12 @@ async = True
 
 def action(machineids, rate, burst):
     from CloudscalerLibcloud.utils.libvirtutil import LibvirtUtil
+
     connection = LibvirtUtil()
     for machineid in machineids:
         domain = connection.get_domain(machineid)
-        for nic in list(connection.get_domain_nics(domain['XMLDesc'])):
+        for nic in list(connection.get_domain_nics(domain["XMLDesc"])):
             if rate:
-                j.system.qos.limitNic(nic, '%skb' % rate, '%skb' % burst)
+                j.system.qos.limitNic(nic, "%skb" % rate, "%skb" % burst)
             else:
                 j.system.qos.removeLimit(nic)

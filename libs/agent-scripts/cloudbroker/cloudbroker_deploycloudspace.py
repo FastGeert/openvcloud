@@ -15,13 +15,11 @@ queue = "io"
 async = True
 
 
-
 def action(cloudspaceId):
     import JumpScale.grid.osis
     import JumpScale.portal
 
-    cl = j.clients.portal.getByInstance('cloudbroker') 
-    cloudspaceapi = cl.getActor('cloudapi','cloudspaces')
+    cl = j.clients.portal.getByInstance("cloudbroker")
+    cloudspaceapi = cl.getActor("cloudapi", "cloudspaces")
 
     return cloudspaceapi.deploy(cloudspaceId)
-

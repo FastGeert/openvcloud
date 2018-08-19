@@ -17,5 +17,6 @@ queue = "hypervisor"
 
 def action(machineid, xml, netinfo):
     from CloudscalerLibcloud.utils.network import NetworkTool
+
     with NetworkTool(netinfo) as net:
         return net.connection.reset(machineid, xml)

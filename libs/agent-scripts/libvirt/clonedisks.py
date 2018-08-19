@@ -28,18 +28,19 @@ def action(ovs_connection, disks):
     # returns list of diskguids of cloned disks corresponding to the diskguids parameter
 
     timestamp = int(time.time())
-    snapshot_name = 'for clone {}'
-    snapshot_path = '/vdisks/{}/create_snapshot'
-    clone_path = '/vdisks/{}/clone'
-    ovs = j.clients.openvstorage.get(ips=ovs_connection['ips'],
-                                     credentials=(ovs_connection['client_id'],
-                                                  ovs_connection['client_secret']))
+    snapshot_name = "for clone {}"
+    snapshot_path = "/vdisks/{}/create_snapshot"
+    clone_path = "/vdisks/{}/clone"
+    ovs = j.clients.openvstorage.get(
+        ips=ovs_connection["ips"],
+        credentials=(ovs_connection["client_id"], ovs_connection["client_secret"]),
+    )
 
     def clone(disk):
-        diskguid = disk['diskguid']
-        clone_name = disk['clone_name']
-        storagerouterguid = disk['storagerouterguid']
-        snapshotguid = disk.get('snapshotguid', None)
+        diskguid = disk["diskguid"]
+        clone_name = disk["clone_name"]
+        storagerouterguid = disk["storagerouterguid"]
+        snapshotguid = disk.get("snapshotguid", None)
 
         # First create snapshot
         if snapshotguid is None:
@@ -51,16 +52,20 @@ def action(ovs_connection, disks):
             snapshotguid = result
 
         # Create clone
-        taskguid = ovs.post(clone_path.format(diskguid),
-                            params=dict(name=clone_name,
-                                        storagerouter_guid=storagerouterguid,
-                                        snapshot_id=snapshotguid))
+        taskguid = ovs.post(
+            clone_path.format(diskguid),
+            params=dict(
+                name=clone_name,
+                storagerouter_guid=storagerouterguid,
+                snapshot_id=snapshotguid,
+            ),
+        )
         success, result = ovs.wait_for_task(taskguid)
         if not success:
             raise Exception("Could not create clone:\n{}".format(result))
-        diskguid = result['vdisk_guid']
-        diskinfo = ovs.get('/vdisks/{}'.format(diskguid))
-        return [diskguid, diskinfo['vpool_guid']]
+        diskguid = result["vdisk_guid"]
+        diskinfo = ovs.get("/vdisks/{}".format(diskguid))
+        return [diskguid, diskinfo["vpool_guid"]]
 
     jobs = [gevent.spawn(clone, disk) for disk in disks]
     gevent.joinall(jobs)
@@ -72,13 +77,14 @@ def action(ovs_connection, disks):
         except:
             failure = True
     if failure:
-        taskguids = [ovs.delete("/vdisks/{}".format(diskguid)) for diskguid, _ in result]
+        taskguids = [
+            ovs.delete("/vdisks/{}".format(diskguid)) for diskguid, _ in result
+        ]
         for taskguid in taskguids:
             success, result = ovs.wait_for_task(taskguid)
             if not success:
                 raise Exception("Could not delete disk:\n{}".format(result))
         raise
     return result
-
 
     return [job.get() for job in jobs]

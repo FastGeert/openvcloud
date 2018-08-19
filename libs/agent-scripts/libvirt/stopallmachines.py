@@ -16,6 +16,7 @@ queue = "hypervisor"
 
 def action():
     import libvirt
+
     con = libvirt.open()
     try:
         for dom in con.listAllDomains():
@@ -26,5 +27,5 @@ def action():
     return True
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     action()

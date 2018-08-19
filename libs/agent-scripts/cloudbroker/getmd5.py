@@ -12,5 +12,6 @@ version = "1.0"
 queue = "io"
 async = True
 
+
 def action(filepath):
     return j.system.fs.md5sum(filepath)

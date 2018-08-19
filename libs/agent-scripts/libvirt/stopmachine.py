@@ -18,6 +18,7 @@ queue = "hypervisor"
 def action(machineid, force=False):
     from CloudscalerLibcloud.utils.libvirtutil import LibvirtUtil
     from CloudscalerLibcloud.utils.network import Network
+
     connection = LibvirtUtil()
     network = Network(connection)
     domain = connection.get_domain_obj(machineid)

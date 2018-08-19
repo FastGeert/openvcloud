@@ -16,6 +16,7 @@ async = True
 
 def action(ovs_connection):
     from CloudscalerLibcloud import openvstorage
+
     # Lists edge clients
     #
     # ovs_connection: dict holding connection info for ovs restapi
@@ -31,41 +32,51 @@ def action(ovs_connection):
     #        }, ...]
 
     protocol = openvstorage.getEdgeProtocol()
-    ovs = j.clients.openvstorage.get(ips=ovs_connection['ips'],
-                                     credentials=(ovs_connection['client_id'],
-                                                  ovs_connection['client_secret']))
+    ovs = j.clients.openvstorage.get(
+        ips=ovs_connection["ips"],
+        credentials=(ovs_connection["client_id"], ovs_connection["client_secret"]),
+    )
 
     # First create a vpools dict
     vpools = dict()
-    result = ovs.get('/vpools', params={'contents': 'vpool'})
-    for vpool in result['data']:
-        vpools[vpool['guid']] = vpool['name']
+    result = ovs.get("/vpools", params={"contents": "vpool"})
+    for vpool in result["data"]:
+        vpools[vpool["guid"]] = vpool["name"]
 
     # filter storagerouters
     storagerouterstatus = dict()
-    for storagerouter in ovs.get('/storagerouters/', params={'contents': 'status'})['data']:
-        storagerouterstatus[storagerouter['guid']] = storagerouter['status']
+    for storagerouter in ovs.get("/storagerouters/", params={"contents": "status"})[
+        "data"
+    ]:
+        storagerouterstatus[storagerouter["guid"]] = storagerouter["status"]
 
     # Then list the storage drivers
     edgeclients = list()
-    result = ovs.get('/storagedrivers', params={'contents': 'vpool,storagerouter,vdisks_guids'})
-    for storagedriver in result['data']:
-        edgeclients.append(dict(storageip=storagedriver['storage_ip'],
-                                edgeport=storagedriver['ports']['edge'],
-                                storagerouterguid=storagedriver['storagerouter_guid'],
-                                vpoolguid=storagedriver['vpool_guid'],
-                                status=storagerouterstatus[storagedriver['storagerouter_guid']],
-                                vpool=vpools[storagedriver['vpool_guid']],
-                                vdiskcount=len(storagedriver['vdisks_guids']),
-                                protocol=protocol))
+    result = ovs.get(
+        "/storagedrivers", params={"contents": "vpool,storagerouter,vdisks_guids"}
+    )
+    for storagedriver in result["data"]:
+        edgeclients.append(
+            dict(
+                storageip=storagedriver["storage_ip"],
+                edgeport=storagedriver["ports"]["edge"],
+                storagerouterguid=storagedriver["storagerouter_guid"],
+                vpoolguid=storagedriver["vpool_guid"],
+                status=storagerouterstatus[storagedriver["storagerouter_guid"]],
+                vpool=vpools[storagedriver["vpool_guid"]],
+                vdiskcount=len(storagedriver["vdisks_guids"]),
+                protocol=protocol,
+            )
+        )
 
     return edgeclients
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import pprint
-    scl = j.clients.osis.getNamespace('system')
+
+    scl = j.clients.osis.getNamespace("system")
     grid = scl.grid.get(j.application.whoAmI.gid)
-    credentials = grid.settings['ovs_credentials']
-    credentials['ips'] = ['localhost']
+    credentials = grid.settings["ovs_credentials"]
+    credentials["ips"] = ["localhost"]
     pprint.pprint(action(credentials))

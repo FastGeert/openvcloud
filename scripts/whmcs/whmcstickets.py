@@ -9,45 +9,39 @@ def _call_whmcs_api(requestparams):
     response = requests.post(WHMCS_API_ENDPOINT, data=actualrequestparams)
     return response
 
-def create_ticket(clientid, deptid, subject, message, priority):
-    print 'Creating %s' % subject
-    create_ticket_request_params = dict(
 
-                action = 'openticket',
-                responsetype = 'json',
-                clientid = clientid,
-                subject = subject,
-                deptid = deptid,
-                message = message,
-                priority = priority,
-                noemail = True,
-                skipvalidation= True
-                )
-    
+def create_ticket(clientid, deptid, subject, message, priority):
+    print "Creating %s" % subject
+    create_ticket_request_params = dict(
+        action="openticket",
+        responsetype="json",
+        clientid=clientid,
+        subject=subject,
+        deptid=deptid,
+        message=message,
+        priority=priority,
+        noemail=True,
+        skipvalidation=True,
+    )
+
     response = _call_whmcs_api(create_ticket_request_params)
     return response.ok
 
 
 def update_ticket(ticketid, deptid, subject, priority, status, userid, email, cc, flag):
-    print 'Updating %s' % ticketid
+    print "Updating %s" % ticketid
     ticket_request_params = dict(
+        action="updateclient",
+        responsetype="json",
+        ticketid=ticketid,
+        deptid=deptid,
+        subject=subject,
+        priority=priority,
+        status=status,
+        userid=userid,
+        noemail=True,
+        skipvalidation=True,
+    )
 
-                action = 'updateclient',
-                responsetype = 'json',
-                ticketid = ticketid,
-                deptid = deptid,
-                subject = subject,
-                priority = priority,
-                status = status,
-                userid = userid,
-                noemail = True,
-                skipvalidation= True
-
-                )
-    
     response = _call_whmcs_api(ticket_request_params)
     return response.ok
-
-
-
-
