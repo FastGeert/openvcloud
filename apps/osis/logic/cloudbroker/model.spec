@@ -87,8 +87,8 @@
     prop:bootType str,, image boot type e.g bios, uefi
     prop:deletionTime int,, epoch time of deletion, in seconds @index
     prop:hotResize bool,, Does image support hot resize?
-
-
+    prop:url str,, url used to get/update the image
+    prop:lastModified int,, last modified timestamp of the downloaded image
 
 [rootmodel:Stack] @dbtype:osis
     """

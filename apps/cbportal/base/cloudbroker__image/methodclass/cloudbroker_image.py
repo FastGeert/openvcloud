@@ -151,6 +151,41 @@ class cloudbroker_image(BaseActor):
         return True
 
     @auth(groups=["level1", "level2", "level3"])
+    def syncCreateImage(
+        self,
+        name,
+        url,
+        gid,
+        imagetype,
+        boottype,
+        username=None,
+        password=None,
+        accountId=None,
+        hotresize=True,
+        **kwargs
+    ):
+        if accountId and not self.models.account.exists(accountId):
+            raise exceptions.BadRequest("Specified accountId does not exist")
+        if boottype not in ["bios", "uefi"]:
+            raise exceptions.BadRequest(
+                "Invalid boottype, should be either uefi or bios"
+            )
+        bytesize = self._getImageSize(url)
+        return self._createImage(
+            name,
+            url,
+            gid,
+            imagetype,
+            boottype,
+            bytesize,
+            username,
+            password,
+            accountId,
+            hotresize,
+            kwargs,
+        )
+
+    @auth(groups=["level1", "level2", "level3"])
     def edit(
         self,
         imageId,
@@ -201,6 +236,7 @@ class cloudbroker_image(BaseActor):
         image = self.models.image.new()
         image.name = name
         image.gid = gid
+        image.url = url
         image.type = imagetype
         image.username = username
         image.password = password
@@ -209,6 +245,7 @@ class cloudbroker_image(BaseActor):
         image.size = gbsize
         image.bootType = boottype
         image.hotResize = hotresize
+        image.lastModified = j.system.net.getServerFileLastModified(url)
         volume = None
         try:
             image.id = self.models.image.set(image)[0]
