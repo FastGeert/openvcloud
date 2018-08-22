@@ -131,6 +131,8 @@ class cloudbroker_machine(BaseActor):
         memory = machine.pop("memory")
         networkId = machine.pop("networkId")
         sourcedisks = machine.pop("disks")
+        machine.pop("cloneReference")
+        machine.pop("clone")
         for disk in sourcedisks:
             totaldisksize += disk["sizeMax"]
         image = self.models.image.searchOne({"name": machine["imagename"]})
